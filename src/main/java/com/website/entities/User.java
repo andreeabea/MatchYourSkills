@@ -1,13 +1,9 @@
 package com.website.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
-enum UserType{Person,Company};
-
-@Entity // This tells Hibernate to make a table out of this class
+@MappedSuperclass // This tells Hibernate to make a table out of this class
 public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -17,15 +13,26 @@ public class User {
 
     private String email;
 
-    private UserType type;
+    private byte[] image;
 
-    public UserType getType() {
-        return type;
+    private String description;
+
+    public String getDescription() {
+        return description;
     }
 
-    public void setType(UserType type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
     }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+//needs password hashed using bcrypt
 
     public Integer getId() {
         return id;

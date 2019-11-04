@@ -4,7 +4,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+enum ExperienceLevel {Entry_Level, Internship, Associate, Mid_Senior, Director, Executive}
 
 @Entity
 public class Job {
@@ -16,13 +20,43 @@ public class Job {
 
     private String name;
 
-    private List<Skill> skills;
+    private Set<Skill> skills;
 
-    private String experienceLevel;
+    private ExperienceLevel experienceLevel;
 
     private String location;
 
     private User employer;
+
+    private Date datePosted;
+
+    private String industry;
+
+    private String description;
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getDatePosted() {
+        return datePosted;
+    }
+
+    public void setDatePosted(Date datePosted) {
+        this.datePosted = datePosted;
+    }
 
     public Integer getId() {
         return id;
@@ -40,19 +74,19 @@ public class Job {
         this.name = name;
     }
 
-    public List<Skill> getSkills() {
+    public Set<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<Skill> skills) {
+    public void setSkills(Set<Skill> skills) {
         this.skills = skills;
     }
 
-    public String getExperienceLevel() {
+    public ExperienceLevel getExperienceLevel() {
         return experienceLevel;
     }
 
-    public void setExperienceLevel(String experienceLevel) {
+    public void setExperienceLevel(ExperienceLevel experienceLevel) {
         this.experienceLevel = experienceLevel;
     }
 
