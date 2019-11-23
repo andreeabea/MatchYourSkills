@@ -16,7 +16,7 @@ enum ExperienceLevel {Entry_Level, Internship, Associate, Mid_Senior, Director, 
 public class Job {
 
     @Id
-    private Integer id;
+    private String id;
 
     private String name;
 
@@ -58,11 +58,11 @@ public class Job {
         this.datePosted = datePosted;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -106,7 +106,7 @@ public class Job {
         this.employer = employer;
     }
 
-    public Job(Integer id, String name, Set<Skill> skills, ExperienceLevel experienceLevel, String location, Company employer, Date datePosted, String industry, String description) {
+    public Job(String id, String name, Set<Skill> skills, ExperienceLevel experienceLevel, String location, Company employer, Date datePosted, String industry, String description) {
         this.id = id;
         this.name = name;
         this.skills = skills;
@@ -117,4 +117,6 @@ public class Job {
         this.industry = industry;
         this.description = description;
     }
+
+    public Job(){}
 }

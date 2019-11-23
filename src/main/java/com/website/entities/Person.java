@@ -51,8 +51,8 @@ public class Person extends User {
         this.jobs = jobs;
     }
 
-    public Person(String id, String name, String email, byte[] image, String description, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
-        super(id, name, email, image, description);
+    public Person(String id, String name, String email, byte[] image, String description, String phone, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
+        super(id, name, email, image, description, phone);
         this.skills = skills;
         this.birthday = birthday;
         this.gender = gender;

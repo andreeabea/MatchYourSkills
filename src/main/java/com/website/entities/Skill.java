@@ -8,15 +8,15 @@ import javax.persistence.*;
 public class Skill {
 
     @Id
-    private Integer id;
+    private String id;
 
     private String name;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -28,8 +28,17 @@ public class Skill {
         this.name = name;
     }
 
-    public Skill(Integer id, String name) {
+    public Skill(String id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Skill(){}
+
+    @Override
+    public String toString() {
+        return "Skill{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

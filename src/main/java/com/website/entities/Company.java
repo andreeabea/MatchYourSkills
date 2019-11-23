@@ -38,10 +38,12 @@ public class Company extends User {
         this.website = website;
     }
 
-    public Company(String id, String name, String email, byte[] image, String description, List<Job> availableJobs, Set<Person> people, String website) {
-        super(id, name, email, image, description);
+    public Company(String id, String name, String email, byte[] image, String description, String phone, List<Job> availableJobs, Set<Person> people, String website) {
+        super(id, name, email, image, description, phone);
         this.availableJobs = availableJobs;
         this.people = people;
         this.website = website;
     }
+
+    public Company(){}
 }

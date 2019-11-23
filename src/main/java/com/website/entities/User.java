@@ -17,6 +17,16 @@ public class User {
 
     private String description;
 
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -58,12 +68,13 @@ public class User {
         this.email = email;
     }
 
-    public User(String id, String name, String email, byte[] image, String description) {
+    public User(String id, String name, String email, byte[] image, String description, String phone) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.image = image;
         this.description = description;
+        this.phone = phone;
     }
     public User()
     {

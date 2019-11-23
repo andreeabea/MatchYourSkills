@@ -1,4 +1,4 @@
-package com.website.dataAccess;
+package com.website.dataAccess.repositories;
 
 import com.website.entities.Person;
 import org.springframework.data.mongodb.repository.MongoRepository;
