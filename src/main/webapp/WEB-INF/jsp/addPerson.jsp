@@ -7,7 +7,7 @@
 
 	<form action="/add" method="POST">
 		<div class="container">
-			<h1>Create User</h1>
+			<h1>Create Person</h1>
 			<p>Please complete the form below</p>
 			<hr>
 
@@ -15,6 +15,8 @@
 				placeholder="Enter Name" name="name" required> <label
 				for="email"><b>Email</b></label> <input type="email"
 				placeholder="Enter Email" name="email" required>
+				for="description"><b>Email</b></label> <input type="description"
+                placeholder="Describe yourself: " name="description" required>
 			<hr>
 
 			<button type="submit" class="registerbtn">Create</button>

@@ -1,13 +1,13 @@
 package com.website.entities;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.persistence.*;
 
-@Entity
+@Document(collection = "skill")
 public class Skill {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-
     private Integer id;
 
     private String name;
@@ -25,6 +25,11 @@ public class Skill {
     }
 
     public void setName(String name) {
+        this.name = name;
+    }
+
+    public Skill(Integer id, String name) {
+        this.id = id;
         this.name = name;
     }
 }

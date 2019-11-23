@@ -1,16 +1,16 @@
 package com.website.entities;
 
-import javax.persistence.*;
-import java.util.List;
+import org.springframework.data.mongodb.core.index.Indexed;
 
-@MappedSuperclass // This tells Hibernate to make a table out of this class
+import javax.persistence.*;
+
 public class User {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private String id;
 
     private String name;
 
+    @Indexed(unique = true)
     private String email;
 
     private byte[] image;
@@ -34,11 +34,11 @@ public class User {
     }
 //needs password hashed using bcrypt
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -56,5 +56,17 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public User(String id, String name, String email, byte[] image, String description) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.image = image;
+        this.description = description;
+    }
+    public User()
+    {
+
     }
 }

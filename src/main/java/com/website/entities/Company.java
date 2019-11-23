@@ -1,13 +1,11 @@
 package com.website.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 import java.util.Set;
 
-@Entity
+@Document(collection = "company")
 public class Company extends User {
 
     private List<Job> availableJobs;
@@ -37,6 +35,13 @@ public class Company extends User {
     }
 
     public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public Company(String id, String name, String email, byte[] image, String description, List<Job> availableJobs, Set<Person> people, String website) {
+        super(id, name, email, image, description);
+        this.availableJobs = availableJobs;
+        this.people = people;
         this.website = website;
     }
 }

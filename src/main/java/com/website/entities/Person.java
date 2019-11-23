@@ -1,23 +1,23 @@
 package com.website.entities;
 
-import javax.persistence.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 enum Gender{Male, Female, Other};
 
-@Entity // This tells Hibernate to make a table out of this class
+@Document(collection = "person")
 public class Person extends User {
 
-    //@OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private Set<Skill> skills;
 
     private Date birthday;
 
     private Gender gender;
 
-    private List<Job> pastJobs;
+    private List<Job> jobs;
 
     public Set<Skill> getSkills() {
         return skills;
@@ -44,10 +44,23 @@ public class Person extends User {
     }
 
     public List<Job> getPastJobs() {
-        return pastJobs;
+        return jobs;
     }
 
-    public void setPastJobs(List<Job> pastJobs) {
-        this.pastJobs = pastJobs;
+    public void setPastJobs(List<Job> jobs) {
+        this.jobs = jobs;
+    }
+
+    public Person(String id, String name, String email, byte[] image, String description, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
+        super(id, name, email, image, description);
+        this.skills = skills;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.jobs = jobs;
+    }
+
+    public Person()
+    {
+        super();
     }
 }
