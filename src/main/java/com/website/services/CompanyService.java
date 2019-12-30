@@ -1,13 +1,13 @@
-package com.website.dataAccess;
+package com.website.services;
 
-import com.website.dataAccess.repositories.CompanyRepository;
+import com.website.repositories.CompanyRepository;
 import com.website.entities.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CompanyDao {
+public class CompanyService {
 
     @Autowired
     CompanyRepository companyRepo;
@@ -19,5 +19,12 @@ public class CompanyDao {
 
     public Iterable<Company> findAll(){
         return companyRepo.findAll();
+    }
+
+    public Company findByName(String name)
+    {
+        if (name == null)
+            return null;
+        return companyRepo.findByName(name);
     }
 }

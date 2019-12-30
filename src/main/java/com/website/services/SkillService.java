@@ -1,12 +1,12 @@
-package com.website.dataAccess;
+package com.website.services;
 
-import com.website.dataAccess.repositories.SkillRepository;
+import com.website.repositories.SkillRepository;
 import com.website.entities.Skill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SkillDao {
+public class SkillService {
 
     @Autowired
     SkillRepository skillRepo;
@@ -17,5 +17,12 @@ public class SkillDao {
 
     public Iterable<Skill> findAll(){
         return skillRepo.findAll();
+    }
+
+    public Skill findByName(String name)
+    {
+        if (name == null)
+            return null;
+        return skillRepo.findByName(name);
     }
 }

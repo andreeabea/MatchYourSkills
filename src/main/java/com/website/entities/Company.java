@@ -10,8 +10,6 @@ public class Company extends User {
 
     private List<Job> availableJobs;
 
-    private Set<Person> people;
-
     private String website;
 
     public List<Job> getAvailableJobs() {
@@ -22,14 +20,6 @@ public class Company extends User {
         this.availableJobs = availableJobs;
     }
 
-    public Set<Person> getPeople() {
-        return people;
-    }
-
-    public void setPeople(Set<Person> people) {
-        this.people = people;
-    }
-
     public String getWebsite() {
         return website;
     }
@@ -38,10 +28,9 @@ public class Company extends User {
         this.website = website;
     }
 
-    public Company(String id, String name, String email, byte[] image, String description, String phone, List<Job> availableJobs, Set<Person> people, String website) {
-        super(id, name, email, image, description, phone);
+    public Company(String id, String name, String email, byte[] image, String description, String phone, String password, List<Job> availableJobs, Set<Person> people, String website) {
+        super(id, name, email, image, description, phone, password);
         this.availableJobs = availableJobs;
-        this.people = people;
         this.website = website;
     }
 

@@ -1,13 +1,16 @@
-package com.website.dataAccess;
+package com.website.services;
 
-import com.website.dataAccess.repositories.JobRepository;
+import com.website.entities.Skill;
+import com.website.repositories.JobRepository;
 import com.website.entities.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+
 @Service
-public class JobDao {
+public class JobService {
 
     @Autowired
     JobRepository jobRepo;
@@ -19,5 +22,14 @@ public class JobDao {
 
     public Iterable<Job> findAll(){
         return jobRepo.findAll();
+    }
+
+    public Job addSkill(String jobName, Skill s)
+    {
+        Job j = jobRepo.findByName(jobName);
+        if(j.getSkills() == null)
+            j.setSkills(new HashSet<Skill>());
+        j.getSkills().add(s);
+        return jobRepo.save(j);
     }
 }

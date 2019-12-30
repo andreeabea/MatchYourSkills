@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
 <style>
@@ -28,7 +28,6 @@
          	opacity: 1;
          }
 
-        /*for th navigation bar */
          ul {
            list-style-type: none;
            margin: 0;
@@ -55,7 +54,7 @@
          }
 
          li a:hover:not(.active) {
-           background-color: #555;
+           background-color: #333;
          }
 
          .active {
@@ -99,10 +98,7 @@
          .dropdown:hover .dropdown-content {
            display: block;
          }
-
-         /*form inputs*/
-
-         input[type=text], input[type=email], input[type=password], select {
+         input[type=text], input[type=email], input[type=phone], input[type=date], select {
            width: 100%;
            padding: 12px 20px;
            margin: 8px 0;
@@ -133,8 +129,6 @@
            padding: 20px;
          }
 
-         /*button shadow*/
-
          .button {
            background-color: #4CAF50; /* Green */
            border: none;
@@ -146,25 +140,14 @@
            font-size: 16px;
            margin: 4px 2px;
            cursor: pointer;
-           box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
          }
 
-         .button1{
-            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-         }
-
-         .button2{
-                     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-                  }
-
-         /*button colour light blue*/
-         .button2 {
-            background-color: #5DB7DE;
-         }
+         .button1 {border-radius: 2px;}
 </style>
 </head>
 <body>
-    <ul>
+
+     <ul>
           <li><img src="logo.png" style="width:50px;height:40px;"></li>
           <li><a class="active" href="/home">Home</a></li>
           <li><a href="/login">Login</a></li>
@@ -178,24 +161,30 @@
           <li><a href="#contact">Contact</a></li>
           <li style="float:right"><a href="#about">About</a></li>
         </ul>
-
-    <center><h1>MatchYourSkills</h1></center>
-    <center><h2>Welcome!</h2></center>
-
-    <center>
-    <button class="button button1">Looking for a job?</button>
-    <button class="button button2">Searching for talents?</button></center>
-    <hr>
-	<form action="/login" method="POST">
+    <div class="container">
+        <ul>
+         <c:forEach var="listValue" items="${skills}">
+            					<li>${listValue.name}</li>
+         </c:forEach>
+         </ul>
+    </div>
+	<form action="/skillAdded" method="POST">
 		<div class="container">
-		<p>Or do you have an account?</p>
-            <h1>Login</h1>
-			<label for="email"><b>Email</b></label> <input type="text"
-				placeholder="Enter Email" name="email" required></br>
-            <label for="password"><b>Password</b></label> <input type="password"
-            	placeholder="Enter Password" name="password" required></br>
+			<h1>Add skill</h1>
+			<hr>
 
-			<button type="submit" class="registerbtn">Create</button>
+			<label for="name"><b>Name</b></label>
+			<select name="name">
+                   <c:forEach var="listValue" items="${allSkills}">
+                                 <option value="${listValue}">${listValue}</option>
+                   </c:forEach>
+            </select>
+
+            <label for="percentage"><b>Percentage</b></label>
+            <input type="text" placeholder="How proefficient you are in this skill? Between 0 - 100"
+            name="percentage" required></br>
+
+			<button type="submit" class="registerbtn">Add</button>
 
 		</div>
 	</form>

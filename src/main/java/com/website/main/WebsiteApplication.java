@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EntityScan("com/website/entities")
-@EnableMongoRepositories("com.website.dataAccess")
+@EnableMongoRepositories("com.website.repositories")
 @ComponentScan(basePackages = {"com"})
 public class WebsiteApplication {
 

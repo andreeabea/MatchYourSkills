@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
 <style>
@@ -28,7 +28,6 @@
          	opacity: 1;
          }
 
-        /*for th navigation bar */
          ul {
            list-style-type: none;
            margin: 0;
@@ -55,7 +54,7 @@
          }
 
          li a:hover:not(.active) {
-           background-color: #555;
+           background-color: #333;
          }
 
          .active {
@@ -99,10 +98,7 @@
          .dropdown:hover .dropdown-content {
            display: block;
          }
-
-         /*form inputs*/
-
-         input[type=text], input[type=email], input[type=password], select {
+         input[type=text], input[type=email], input[type=phone], input[type=date], select {
            width: 100%;
            padding: 12px 20px;
            margin: 8px 0;
@@ -133,8 +129,6 @@
            padding: 20px;
          }
 
-         /*button shadow*/
-
          .button {
            background-color: #4CAF50; /* Green */
            border: none;
@@ -146,56 +140,51 @@
            font-size: 16px;
            margin: 4px 2px;
            cursor: pointer;
-           box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
          }
 
-         .button1{
-            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-         }
-
-         .button2{
-                     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-                  }
-
-         /*button colour light blue*/
-         .button2 {
-            background-color: #5DB7DE;
-         }
+         .button1 {border-radius: 2px;}
 </style>
 </head>
 <body>
-    <ul>
-          <li><img src="logo.png" style="width:50px;height:40px;"></li>
-          <li><a class="active" href="/home">Home</a></li>
-          <li><a href="/login">Login</a></li>
-          <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Register</a>
-                    <div class="dropdown-content">
-                      <a href="/addperson">As Person</a>
-                      <a href="/addcompany">As Company</a>
-                    </div>
-          </li>
-          <li><a href="#contact">Contact</a></li>
-          <li style="float:right"><a href="#about">About</a></li>
-        </ul>
 
-    <center><h1>MatchYourSkills</h1></center>
-    <center><h2>Welcome!</h2></center>
+     <ul class="ulbar">
+                 <li class="libar"><img src="logo.png" style="width:50px;height:40px;"></li>
+                 <li class="libar"><a class="active" href="/home">Home</a></li>
+                 <li class="libar"><a href="/profilePage">Profile</a></li>
+                 <li class="libar"><a href="/browseJobs">Browse Jobs</a></li>
+                 <li class="libar"><a href="#contact">Contact</a></li>
+                 <li class="libar" style="float:right"><a href="#logout">Logout</a></li>
+                 <li class="libar" style="float:right"><a href="#about">About</a></li>
+     </ul>
 
-    <center>
-    <button class="button button1">Looking for a job?</button>
-    <button class="button button2">Searching for talents?</button></center>
-    <hr>
-	<form action="/login" method="POST">
+	<form action="/addj" method="POST">
 		<div class="container">
-		<p>Or do you have an account?</p>
-            <h1>Login</h1>
-			<label for="email"><b>Email</b></label> <input type="text"
-				placeholder="Enter Email" name="email" required></br>
-            <label for="password"><b>Password</b></label> <input type="password"
-            	placeholder="Enter Password" name="password" required></br>
+			<h1>Post a new job</h1>
+			<hr>
 
-			<button type="submit" class="registerbtn">Create</button>
+			<label for="name"><b>Name</b></label>
+			<input type="text" placeholder="Enter Job Name" name="name" required></br>
+
+			<label for="experienceLevel"><b>Experience Level</b></label>
+			<select name="experienceLevel" required>
+			    <option value = "Entry_level">Entry level</option>
+			    <option value = "Internship">Internship</option>
+			    <option value = "Associate">Associate</option>
+			    <option value = "Mid_Senior">Mid Senior</option>
+			    <option value = "Director">Director</option>
+			    <option value = "Executive">Executive</option>
+			</select>
+
+			<label for="location"><b>Location</b></label>
+            <input type="text" placeholder="Enter Job Location" name="location" required></br>
+
+            <label for="industry"><b>Industry</b></label>
+            <input type="text" placeholder="Enter Job's Industry (e.g. IT, Recruiting, Financial)" name="industry" required></br>
+
+            <label for="description"><b>Description</b></label>
+                        <input type="text" placeholder="Job's description, requirements, benefits" name="description" required></br>
+
+			<button type="submit" class="registerbtn">Next</button>
 
 		</div>
 	</form>

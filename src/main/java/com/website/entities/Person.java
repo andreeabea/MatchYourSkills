@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-enum Gender{Male, Female, Other};
-
 @Document(collection = "person")
 public class Person extends User {
 
@@ -18,6 +16,16 @@ public class Person extends User {
     private Gender gender;
 
     private List<Job> jobs;
+
+    private Job currentJob;
+
+    public Job getCurrentJob() {
+        return currentJob;
+    }
+
+    public void setCurrentJob(Job currentJob) {
+        this.currentJob = currentJob;
+    }
 
     public Set<Skill> getSkills() {
         return skills;
@@ -43,16 +51,16 @@ public class Person extends User {
         this.gender = gender;
     }
 
-    public List<Job> getPastJobs() {
+    public List<Job> getJobs() {
         return jobs;
     }
 
-    public void setPastJobs(List<Job> jobs) {
+    public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
     }
 
-    public Person(String id, String name, String email, byte[] image, String description, String phone, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
-        super(id, name, email, image, description, phone);
+    public Person(String id, String name, String email, byte[] image, String description, String phone, String password, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
+        super(id, name, email, image, description, phone, password);
         this.skills = skills;
         this.birthday = birthday;
         this.gender = gender;

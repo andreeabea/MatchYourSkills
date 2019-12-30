@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
-<c:url value="/css/style.css" var="jstlCss" />
-<link href="${jstlCss}" rel="stylesheet" />
 <style>
- html, body, h1, h2, h3, h4, h5 {
+     html, body, h1, h2, h3, h4, h5 {
      	font-family: "Raleway", sans-serif
      }
      /* Overwrite default styles of hr */
@@ -146,7 +143,6 @@
 
      .button1 {border-radius: 2px;}
 </style>
-</head>
 <body>
     <ul>
       <li><img src="logo.png" style="width:50px;height:40px;"></li>
@@ -163,9 +159,9 @@
       <li style="float:right"><a href="#about">About</a></li>
     </ul>
 
-	<form action="/addp" method="POST">
+	<form action="/addc" method="POST">
 		<div class="container">
-			<h1>Person register</h1>
+			<h1>Company register</h1>
 			<p>Please complete the form below</p>
 			<hr>
 
@@ -193,15 +189,8 @@
                         placeholder="Enter Telephone Number (e.g. +40123456789)"
                         name="phone" required>
 
-            <label for="birthdayy"><b>Birthday</b></label>
-            <input type="date" name="birthdayy">
-
-			<label for="genderr"><b>Gender</b></label>
-			<select id="genderr" name="genderr">
-              <option value="Male" checked> Male<br>
-              <option value="Female"> Female<br>
-              <option value="Other"> Other
-            </select>
+            <label for="website"><b>Website</b></label> <input type="text"
+            	placeholder="Enter Website Address" name="website" required></br>
 
 			<button type="submit" class="registerbtn">Create</button>
 
