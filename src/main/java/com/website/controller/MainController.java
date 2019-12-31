@@ -93,19 +93,19 @@ public class MainController {
         return "redirect:/addJobSkill?job="+job.replace(" ", "%20");
     }
 
-    @GetMapping("addPersonSkill")
+    @GetMapping("/addPersonSkill")
     public String getAddPersonSkillPage(ModelMap map)//, Principal principal)
     {
         //ASTA O SA FIE PRINCIPAL.getname
         String deleteMe = "beputa@yahoo.com";
-        map.addAttribute("skills",personService.getByEmail(deleteMe).getSkills());
+        map.addAttribute("skills",personService.findByEmail(deleteMe).getSkills());
         List<String> allSkills = new ArrayList<String>();
         skillService.findAll().forEach(x -> allSkills.add(x.getName()));
         map.addAttribute("allSkills",allSkills);
         return "/addPersonSkill";
     }
 
-    @PostMapping("skillAdded")
+    @PostMapping("/skillAdded")
     public String addSkill(Skill s)
     {
         String deleteMe = "beputa@yahoo.com";
@@ -182,8 +182,6 @@ public class MainController {
         // This returns a JSON or XML with the users
         return companyService.findAll();
     }
-
-
 
     @GetMapping(path="/alljobs")
     public @ResponseBody Iterable<Job> getAllJobs() {

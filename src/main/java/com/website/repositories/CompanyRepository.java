@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface CompanyRepository extends MongoRepository<Company,String> {
 
     public Company findByName(String name);
+    public Company findByEmail(String email);
 }

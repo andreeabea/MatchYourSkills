@@ -4,6 +4,7 @@ import com.website.entities.Skill;
 import com.website.repositories.PersonRepository;
 import com.website.entities.Person;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,11 @@ public class PersonService {
 
     @Transactional
     public Person save(Person p){
+        p.setPassword(new BCryptPasswordEncoder().encode(p.getPassword()));
         return personRepo.save(p);
     }
 
-    public Person getByEmail(String email){
+    public Person findByEmail(String email){
         if (email == null)
             return null;
         return personRepo.findByEmail(email);
