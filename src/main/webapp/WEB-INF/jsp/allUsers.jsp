@@ -60,7 +60,6 @@
          .active {
            background-color: #4CAF50;
          }
-
          .libar a, .dropbtn {
            display: inline-block;
            color: white;
@@ -201,76 +200,76 @@
      display: table;
    }
 
- ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #333;
-      }
+   ul {
+           list-style-type: none;
+           margin: 0;
+           padding: 0;
+           overflow: hidden;
+           background-color: #333;
+         }
 
-      li {
-        float: left;
-        border-right:1px solid #bbb;
-      }
+         li {
+           float: left;
+           border-right:1px solid #bbb;
+         }
 
-      li:last-child {
-        border-right: none;
-      }
+         li:last-child {
+           border-right: none;
+         }
 
-      li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-      }
+         li a {
+           display: block;
+           color: white;
+           text-align: center;
+           padding: 14px 16px;
+           text-decoration: none;
+         }
 
-      li a:hover:not(.active) {
-        background-color: #555;
-      }
+         li a:hover:not(.active) {
+           background-color: #555;
+         }
 
-      .active {
-        background-color: #4CAF50;
-      }
-      li a, .dropbtn {
-        display: inline-block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-      }
+         .active {
+           background-color: #4CAF50;
+         }
+         li a, .dropbtn {
+           display: inline-block;
+           color: white;
+           text-align: center;
+           padding: 14px 16px;
+           text-decoration: none;
+         }
 
-      li a:hover, .dropdown:hover .dropbtn {
-        background-color: #4CAF50;
-      }
+         li a:hover, .dropdown:hover .dropbtn {
+           background-color: #4CAF50;
+         }
 
-      li.dropdown {
-        display: inline-block;
-      }
+         li.dropdown {
+           display: inline-block;
+         }
 
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-      }
+         .dropdown-content {
+           display: none;
+           position: absolute;
+           background-color: #f9f9f9;
+           min-width: 160px;
+           box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+           z-index: 1;
+         }
 
-      .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        text-align: left;
-      }
+         .dropdown-content a {
+           color: black;
+           padding: 12px 16px;
+           text-decoration: none;
+           display: block;
+           text-align: left;
+         }
 
-      .dropdown-content a:hover {background-color: #f1f1f1;}
+         .dropdown-content a:hover {background-color: #f1f1f1;}
 
-      .dropdown:hover .dropdown-content {
-        display: block;
-      }
+         .dropdown:hover .dropdown-content {
+           display: block;
+         }
 </style>
 </head>
 <body>
@@ -285,33 +284,44 @@
     </form>
 
 	<div class = "div1">
-      <ul class="ul1">
+          <ul class="ul1">
 
-        <c:forEach var="listValue" items="${jobs}" varStatus="loop">
-        <li class="li1">
-                  <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
-                  <h1>${listValue.name}</h1>
-                  <h3>Company: ${companies[loop.index].name}</h3>
-                  <h3>Date Posted: ${listValue.datePosted}</h3>
-                  <h3>Required skills: ${listValue.skills}</h3>
-                  <h3>Experience: ${listValue.experienceLevel}</h3>
-                  <c:choose>
-                    <c:when test="${isPerson}">
-                  <form action="/saveJob" method="POST">
-                  <input type="hidden" name="id" value= "${listValue.id}">
-                  <button type="submit" class="registerbtn">Save job</button></form>
-                  <button type="submit" class="registerbtn">View Company</button>
-                    </c:when>
-                    <c:when test="${isAdmin}">
-                        <form action="/deleteJob" method="POST">
-                                           <input type="hidden" name="id" value= "${listValue.id}">
-                                           <button type="submit" class="registerbtn">Delete job</button></form>
-                    </c:when>
-                  </c:choose>
-                </li>
-        </c:forEach>
-      </ul>
-    </div>
+            <c:forEach var="listValue" items="${persons}" varStatus="loop">
+            <li class="li1">
+                      <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
+                      <h1>${listValue.name}</h1>
+                      <h3>Description: ${listValue.address}</h3>
+                      <h3>Current job: ${listValue.currentJob.name} - ${listValue.currentJob.experienceLevel}</h3>
+                      <h3>Email: ${listValue.email}</h3>
+                      <h3>Skills: ${listValue.skills}</h3>
+                      <h3>Description: ${listValue.description}</h3>
+
+                       <form action="/deleteUser" method="POST">
+                         <input type="hidden" name="id" value= "${listValue.id}">
+                       <button type="submit" class="registerbtn">Delete</button></form>
+            </li>
+            </c:forEach>
+          </ul>
+        </div>
+
+        <div class = "div1">
+                  <ul class="ul1">
+
+                    <c:forEach var="listValue" items="${companies}" varStatus="loop">
+                    <li class="li1">
+                              <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images2[loop.index]}"/>
+                              <h1>${listValue.name}</h1>
+                              <h3>Email: ${listValue.email}</h3>
+                              <h3>Description: ${listValue.description}</h3>
+                               <h3>Website: ${listValue.website}</h3>
+
+                               <form action="/deleteUser" method="POST">
+                                 <input type="hidden" name="id" value= "${listValue.id}">
+                               <button type="submit" class="registerbtn">Delete</button></form>
+                    </li>
+                    </c:forEach>
+                  </ul>
+                </div>
 
 </body>
 </html>

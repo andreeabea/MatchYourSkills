@@ -1,11 +1,13 @@
 <!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
-<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
+<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
 <html>
 <head>
+
 <style>
-     html, body, h1, h2, h3, h4, h5 {
+ html, body, h1, h2, h3, h4, h5 {
      	font-family: "Raleway", sans-serif
      }
      /* Overwrite default styles of hr */
@@ -146,43 +148,45 @@
 
      .button1 {border-radius: 2px;}
 </style>
+</head>
 <body>
 
-	<form action="/addc" method="POST" enctype="multipart/form-data">
+<form action="/editj" method="POST">
 		<div class="container">
-			<h1>Company register</h1>
-			<p>Please complete the form below</p>
+			<h1>Edit job</h1>
 			<hr>
 
-			<label for="name"><b>Name</b></label> <input type="text"
-				placeholder="Enter Name" name="name" required></br>
+			<label for="name"><b>Name</b></label>
+			<input type="text" placeholder="${name}" name="name"></br>
 
-			<label for="email"><b>Email</b></label> <input type="email"
-				placeholder="Enter Email" name="email" required></br>
+			<label for="experienceLevel"><b>Experience Level</b></label>
+			<select name="experienceLevel" required>
+			    <option id = "Entry_Level" value = "Entry_Level">Entry Level</option>
+			    <option id = "Internship" value = "Internship">Internship</option>
+			    <option id = "Associate" value = "Associate">Associate</option>
+			    <option id = "Mid_Senior" value = "Mid_Senior">Mid Senior</option>
+			    <option id = "Director" value = "Director">Director</option>
+			    <option id = "Executive" value = "Executive">Executive</option>
+			</select>
 
-			<label for="password"><b>Password</b></label> <input type="password"
-            				placeholder="Enter Password" name="password" required></br>
-
-			<label for="description"><b>Description</b></label> <input type="text"
-                placeholder="Describe yourself" name="description" required></br>
-
-            <label for="image"><b>Image</b></label>
-            <div><input type="file" accept="image/*" id="fileInput" name="image"/></div>
-            <script>
-               function chooseFile() {
-                  document.getElementById("fileInput").click();
-               }
+			<script>
+            function myFunction() {
+              document.getElementById("${experienceLevel}").selected = "true";
+            }
+            myFunction();
             </script>
-            <label for="phone"><b>Phone number</b></label> <input
-                        type="phone" pattern="+[0-9]{11}"
-                        placeholder="Enter Telephone Number (e.g. +40123456789)"
-                        name="phone" required>
 
-            <label for="website"><b>Website</b></label> <input type="text"
-            	placeholder="Enter Website Address" name="website" required></br>
+			<label for="location"><b>Location</b></label>
+            <input type="text" placeholder="${location}" name="location" ></br>
 
-			<button type="submit" class="registerbtn">Submit</button>
+            <label for="industry"><b>Industry</b></label>
+            <input type="text" placeholder="${industry}" name="industry"></br>
 
+            <label for="description"><b>Description</b></label>
+                        <input type="text" placeholder="${description}" name="description" ></br>
+
+            <input type="hidden" name="job" value= "${job}">
+			<button type="submit" class="registerbtn">Save</button>
 		</div>
 	</form>
 

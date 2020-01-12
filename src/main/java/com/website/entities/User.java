@@ -1,5 +1,6 @@
 package com.website.entities;
 
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,7 +17,7 @@ public class User {
 
     private String password;
 
-    private byte[] image;
+    private Binary image;
 
     private String description;
 
@@ -38,11 +39,11 @@ public class User {
         this.description = description;
     }
 
-    public byte[] getImage() {
+    public Binary getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(Binary image) {
         this.image = image;
     }
 
@@ -70,7 +71,7 @@ public class User {
         this.email = email;
     }
 
-    public User(String id, String name, String email, byte[] image, String description, String phone, String password) {
+    public User(String id, String name, String email, Binary image, String description, String phone, String password) {
         this.id = id;
         this.name = name;
         this.email = email;

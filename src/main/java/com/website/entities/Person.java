@@ -1,5 +1,6 @@
 package com.website.entities;
 
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -14,6 +15,24 @@ public class Person extends User {
     private Date birthday;
 
     private Gender gender;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public boolean interestedIn(Job job){
+        for(Job j : jobs){
+            if(j.getId().equals(job.getId()))
+                return true;
+        }
+        return false;
+    }
+
+    private String address;
 
     private List<Job> jobs;
 
@@ -59,7 +78,7 @@ public class Person extends User {
         this.jobs = jobs;
     }
 
-    public Person(String id, String name, String email, byte[] image, String description, String phone, String password, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
+    public Person(String id, String name, String email, Binary image, String description, String phone, String password, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
         super(id, name, email, image, description, phone, password);
         this.skills = skills;
         this.birthday = birthday;
@@ -70,5 +89,10 @@ public class Person extends User {
     public Person()
     {
         super();
+    }
+
+    public void addJob(Job j)
+    {
+        this.jobs.add(j);
     }
 }

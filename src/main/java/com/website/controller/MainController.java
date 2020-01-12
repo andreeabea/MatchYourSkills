@@ -6,20 +6,24 @@ import com.website.services.PersonService;
 import com.website.services.SkillService;
 import com.website.entities.*;
 import com.website.entities.Person;
+import org.bson.BsonBinarySubType;
+import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller    // This means that this class is a Controller
 public class MainController {
@@ -37,41 +41,233 @@ public class MainController {
     private JobService jobService;
 
     @GetMapping("/home")
-    public String getHome()
-    {
-        return "/home";
+    public String getHome() {
+        return "home";
     }
 
     @GetMapping("/profilePage")
-    public String getProfilePage()
+    public String getProfilePage(ModelMap map, Principal principal)
     {
-        return "/profilePage";
+        String email = principal.getName();
+        Person currentUser = personService.findByEmail(email);
+        if(currentUser.getCurrentJob()!=null)
+        {
+            map.addAttribute("currentJob",currentUser.getCurrentJob());
+        }
+        if(currentUser.getBirthday()!=null)
+        {
+            map.addAttribute("birthday", new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getBirthday()));
+        }
+        map.addAttribute("email", currentUser.getEmail());
+        map.addAttribute("skills", currentUser.getSkills());
+        map.addAttribute("phone", currentUser.getPhone());
+        map.addAttribute("description", currentUser.getDescription());
+        if(currentUser.getImage()!=null)
+        {
+            map.addAttribute("image", Base64.getEncoder().encodeToString(currentUser.getImage().getData()));
+        }
+        map.addAttribute("name", currentUser.getName());
+        map.addAttribute("address",currentUser.getAddress());
+        Job currentJob = currentUser.getCurrentJob();
+        if(currentJob!=null)
+        {
+            map.addAttribute("currentJob", currentJob);
+            map.addAttribute("startDate", new SimpleDateFormat("dd/MM/yyyy").format(currentJob.getDatePosted()));
+            map.addAttribute("employer", currentJob.getEmployerId());
+        }
+
+        return "profilePage";
+    }
+
+    @GetMapping("/addCurrentJob")
+    public String getAddCurrentJob()
+    {
+        return "addCurrentJob";
+    }
+
+    @PostMapping("addCurrentJ")
+    public String addCurrentJob(Job j, BindingResult bindingResult, String birthdayy, String employer, Principal principal)
+    {
+        if(bindingResult.hasErrors())
+        {
+            return "/addCurrentJ";
+        }
+        try {
+            j.setDatePosted(new SimpleDateFormat("yyyy-dd-MM").parse(birthdayy));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        j.setEmployerId(employer);
+        Person p = personService.findByEmail(principal.getName());
+        personService.saveCurrentJob(p,j);
+        return "redirect:/profilePage";
+    }
+
+    @PostMapping("/deletePersonSkill")
+    public String deletePersonSkill(Principal principal, String name)
+    {
+        personService.removeSkill(principal.getName(),skillService.findByName(name));
+        return "redirect:/addPersonSkill";
+    }
+
+    @GetMapping("/profileCompany")
+    public String getProfilePageCompany(ModelMap map, Principal principal)
+    {
+        String email = principal.getName();
+        Company currentUser = companyService.findByEmail(email);
+        map.addAttribute("email", currentUser.getEmail());
+        map.addAttribute("website", currentUser.getWebsite());
+        map.addAttribute("phone", currentUser.getPhone());
+        map.addAttribute("image", Base64.getEncoder().encodeToString(currentUser.getImage().getData()));
+        map.addAttribute("name", currentUser.getName());
+        List<Job> availableJobs = jobService.findByCompany(currentUser.getId());
+        map.addAttribute("jobs", availableJobs.stream().limit(2).collect(Collectors.toList()));
+
+        Person manager = currentUser.getManager();
+        if(manager!=null)
+        {
+            map.addAttribute("nameM", manager.getName());
+            map.addAttribute("emailM", manager.getEmail());
+            map.addAttribute("phoneM",manager.getPhone());
+            map.addAttribute("addressM",manager.getAddress());
+            map.addAttribute("descriptionM", manager.getDescription());
+            map.addAttribute("imageM", Base64.getEncoder().encodeToString(manager.getImage().getData()));
+        }
+        return "profileCompany";
+    }
+
+    @GetMapping("/viewPostedJobs")
+    public String getViewPostedJobs(ModelMap map, Principal principal)
+    {
+        List<Job> savedJobs = new ArrayList<>();
+        jobService.findAll().forEach(x -> savedJobs.add(x));
+        Company c = companyService.findByEmail(principal.getName());
+        savedJobs.stream().filter(x -> x.getEmployerId().equals(c.getId()));
+
+        map.addAttribute("jobs", savedJobs);
+        map.addAttribute("name", c.getName());
+
+        List<String> images = new ArrayList<>();
+        for(Job j : savedJobs)
+        {
+            images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+        }
+        map.addAttribute("images", images);
+        return "viewPostedJobs";
+    }
+
+    @GetMapping("/interestedPeople")
+    public String getViewInterestedPeople(ModelMap map, Principal principal, String job)
+    {
+        List<Person> people = new ArrayList<>();
+        personService.findAll().forEach(x -> people.add(x));
+        List<Person> peopleInterested = new ArrayList<>();
+        for(Person p : people){
+            if(p.getJobs()!=null)
+            {
+                for(Job j : p.getJobs())
+                    if (j.getId().equals(job))
+                        peopleInterested.add(p);
+            }
+        }
+
+        map.addAttribute("people", peopleInterested);
+
+        List<String> images = new ArrayList<>();
+        for(Person p : peopleInterested)
+        {
+            images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+        }
+        map.addAttribute("images", images);
+        return "interestedPeople";
+    }
+
+    @PostMapping(path="/viewInterestedPeople")
+    public String viewInterestedPeople(String job)
+    {
+        return "redirect:/interestedPeople?job="+job.replace(" ", "%20");
     }
 
     @GetMapping("/browseJobs")
-    public String getBrowseJobsPage()
+    public String getBrowseJobsPage(ModelMap map, Principal principal)
     {
-        return "/browseJobs";
+        List<Job> allJobs = new ArrayList<>();
+        Person p = personService.findByEmail(principal.getName());
+        jobService.findAll().forEach(x -> {if(!p.interestedIn(x))
+            allJobs.add(x);
+        }
+        );
+        map.addAttribute("jobs", allJobs);
+
+        List<Company> companies = new ArrayList<>();
+        List<String> images = new ArrayList<>();
+        for(Job j : allJobs)
+        {
+            Company c = companyService.findById(j.getEmployerId());
+            companies.add(c);
+            images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+        }
+        map.addAttribute("companies", companies);
+        map.addAttribute("images", images);
+        return "browseJobs";
+    }
+
+    @GetMapping("/savedJobs")
+    public String getSavedJobsPage(ModelMap map, Principal principal)
+    {
+        List<Job> savedJobs = personService.findByEmail(principal.getName()).getJobs();
+        map.addAttribute("jobs", savedJobs);
+
+        List<Company> companies = new ArrayList<>();
+        List<String> images = new ArrayList<>();
+        if(savedJobs!=null)
+        {
+            for(Job j : savedJobs)
+            {
+                Company c = companyService.findById(j.getEmployerId());
+                companies.add(c);
+                images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            }
+            map.addAttribute("companies", companies);
+            map.addAttribute("images", images);
+        }
+        return "savedJobs";
+    }
+
+    @PostMapping(path="/saveJob")
+    public String saveJob(String id, Principal principal)
+    {
+        personService.addJob(principal.getName(), jobService.findById(id));
+        return "redirect:/savedJobs";
     }
 
     @GetMapping("/postjob")
     public String getAddJob()
     {
-        return "/postJob";
+        return "postJob";
     }
 
     @PostMapping(path="/addj")
-    public String addNewJob (Job j, BindingResult bindingResult) {
+    public String addNewJob (Job j, BindingResult bindingResult, Principal principal, HttpServletRequest request) {
         if(bindingResult.hasErrors())
         {
-            return "/postJob";
+            return "postJob";
         }
-        String deleteCompany = "Google";
+        String companyEmail = principal.getName();
+        //SimpleDateFormat formatter = new SimpleDateFormat("hh:mm dd/MM/yyyy");
+       // try {
+            //j.setDatePosted(formatter.parse((new Date()).toString()));
+        //}
+        //p.setBirthday(new SimpleDateFormat("MM/dd/yyyy").parse(birthdayy));
         j.setDatePosted(new Date());
-        Company c = companyService.findByName(deleteCompany);
-        j.setEmployer(c);
+        Company c = companyService.findByEmail(companyEmail);
+        j.setEmployerId(c.getId());
         jobService.save(j);
-        return "redirect:/addJobSkill?job="+j.getName().replace(" ", "%20");
+        if(request.isUserInRole("ADMIN"))
+        {
+            return "redirect:/browseJobs";
+        }
+        return "redirect:/addJobSkill?job="+j.getId().replace(" ", "%20");
     }
 
     @GetMapping(path="/addJobSkill")
@@ -81,111 +277,345 @@ public class MainController {
         skillService.findAll().forEach(x -> allSkills.add(x.getName()));
         map.addAttribute("allSkills",allSkills);
         map.addAttribute("job",job);
-        return "/addJobSkill";
+        List<Skill> skills = new ArrayList<>();
+        Job j = jobService.findById(job);
+        if(j.getSkills()!=null)
+        {
+            j.getSkills().forEach(x->skills.add(x));
+        }
+        map.addAttribute("skills", skills);
+        return "addJobSkill";
     }
 
     @PostMapping(path = "/skillsToJob")
     public String addSkillToJob(String name, String job)
     {
-        String deleteCompany = "Google";
         Skill s = skillService.findByName(name);
         jobService.addSkill(job, s);
         return "redirect:/addJobSkill?job="+job.replace(" ", "%20");
     }
 
     @GetMapping("/addPersonSkill")
-    public String getAddPersonSkillPage(ModelMap map)//, Principal principal)
+    public String getAddPersonSkillPage(ModelMap map, Principal principal)
     {
-        //ASTA O SA FIE PRINCIPAL.getname
-        String deleteMe = "beputa@yahoo.com";
-        map.addAttribute("skills",personService.findByEmail(deleteMe).getSkills());
+        String email = principal.getName();
+        map.addAttribute("skills",personService.findByEmail(email).getSkills());
         List<String> allSkills = new ArrayList<String>();
         skillService.findAll().forEach(x -> allSkills.add(x.getName()));
         map.addAttribute("allSkills",allSkills);
-        return "/addPersonSkill";
+        return "addPersonSkill";
     }
 
     @PostMapping("/skillAdded")
-    public String addSkill(Skill s)
+    public String addSkill(Skill s, Principal principal)
     {
-        String deleteMe = "beputa@yahoo.com";
-        personService.addSkill(deleteMe,s);
+        s.setId(skillService.findByName(s.getName()).getId());
+        String email = principal.getName();
+        personService.addSkill(email,s);
         return "redirect:/addPersonSkill";
     }
 
     @GetMapping("/addperson")
     public String getAddPerson()
     {
-        return "/addPerson";
+        return "addPerson";
     }
 
     @PostMapping(path="/addp") // Map ONLY POST Requests
-    public String addNewPerson (String birthdayy, Person p, BindingResult bindingResult1,
-                                String genderr, BindingResult bindingResult2) {
-        if(bindingResult1.hasErrors()){
-            return "/addPerson";
+    public String addNewPerson (@RequestParam("image") MultipartFile image,String birthdayy, Person p, BindingResult bindingResult1,
+                                String genderr, HttpServletRequest request) {
+        if(bindingResult1.hasErrors() && !bindingResult1.hasFieldErrors("image"))
+        {
+            return "addPerson";
         }
-        if(bindingResult2.hasErrors()){
-            return "/addPerson";
+        try {
+            p.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         p.setGender(Gender.valueOf(genderr));
         try {
-            p.setBirthday(new SimpleDateFormat("MM/dd/yyyy").parse(birthdayy));
+            p.setBirthday(new SimpleDateFormat("yyyy-dd-MM").parse(birthdayy));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         personService.save(p);
-        return "Saved";
+        if(request.isUserInRole("ADMIN"))
+        {
+            return "redirect:/allusers";
+        }
+        return "redirect:/login";
     }
 
-    @GetMapping(path="/allpersons")
-    public @ResponseBody Iterable<Person> getAllPersons() {
+    @GetMapping("/editaccount")
+    public String getEditAccount(ModelMap map, Principal principal, HttpServletRequest request)
+    {
+        User user = null;
+        if(request.isUserInRole("PERSON") || request.isUserInRole("ADMIN"))
+        {
+            user = personService.findByEmail(principal.getName());
+            map.addAttribute("address", ((Person) user).getAddress());
+        }
+        else if(request.isUserInRole("COMPANY"))
+        {
+            user = companyService.findByEmail(principal.getName());
+            map.addAttribute("website", ((Company) user).getWebsite());
+        }
+        map.addAttribute("name", user.getName());
+        map.addAttribute("description", user.getDescription());
+        map.addAttribute("phone", user.getPhone());
+        return "editAccount";
+    }
+
+    @PostMapping("/editAccount")
+    public String editAccount(@RequestParam("image") MultipartFile image, HttpServletRequest request, Principal principal, String name, String email,
+                              String description, String phone, String address)
+    {
+        if(request.isUserInRole("PERSON") || request.isUserInRole("ADMIN"))
+        {
+            Person p = personService.findByEmail(principal.getName());
+            if(image.isEmpty())
+            {
+                personService.editPerson(p,null,name,description,phone,address);
+            }
+            else{
+                try {
+                    personService.editPerson(p,new Binary(BsonBinarySubType.BINARY, image.getBytes()),name
+                            ,description,phone,address);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "redirect:/profilePage";
+        }
+        else if(request.isUserInRole("COMPANY"))
+        {
+            Company c = companyService.findByEmail(principal.getName());
+            if(image.isEmpty())
+            {
+                companyService.editCompany(c,null,name,description,phone,address);
+            }
+            else{
+                try {
+                    companyService.editCompany(c,new Binary(BsonBinarySubType.BINARY, image.getBytes()),name,description,phone,address);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "redirect:/profileCompany";
+        }
+        return "editAccount";
+    }
+
+    @GetMapping("/changepassword")
+    public String getChangePassword()
+    {
+        return "changePassword";
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(String password, String passwordNew1, String passwordNew2, Principal principal)
+    {
+        Person p = personService.findByEmail(principal.getName());
+        if((new BCryptPasswordEncoder()).matches(password, p.getPassword())==false
+            || passwordNew1.equals(passwordNew2)==false || password.equals(passwordNew1))
+        {
+            return "changePassword";
+        }
+        else
+        {
+            p.setPassword(passwordNew1);
+            personService.save(p);
+            return "redirect:/login";
+        }
+    }
+
+    @GetMapping("/editManager")
+    public String getEditManager(ModelMap map, Principal principal)
+    {
+        Company c = companyService.findByEmail(principal.getName());
+        Person manager = c.getManager();
+        if(manager!=null)
+        {
+            map.addAttribute("name", manager.getName());
+            map.addAttribute("email", manager.getEmail());
+            map.addAttribute("description", manager.getDescription());
+            map.addAttribute("phone", manager.getPhone());
+            map.addAttribute("address", manager.getAddress());
+        }
+        return "editManager";
+    }
+
+    @PostMapping("/editm")
+    public String editManager(@RequestParam("image") MultipartFile image, String name, String email,
+                              String description, String phone, String address, Principal principal)
+    {
+        Company c = companyService.findByEmail(principal.getName());
+        Person manager = c.getManager();
+
+        if(manager==null)
+            manager = new Person();
+
+        if(image.isEmpty())
+        {
+            companyService.editManager(c,manager,null,name,description,phone,address, email);
+        }
+        else{
+            try {
+                companyService.editManager(c,manager ,new Binary(BsonBinarySubType.BINARY, image.getBytes()),name
+                        ,description,phone,address, email);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "redirect:/profileCompany";
+    }
+
+    @GetMapping(path="/allusers")
+    public String getAllPersons(ModelMap map) {
         // This returns a JSON or XML with the users
-        return personService.findAll();
+        List<Person> persons = new ArrayList<>();
+        personService.findAll().forEach(x->persons.add(x));
+        map.addAttribute("persons", persons);
+        List<Company> companies = new ArrayList<>();
+        companyService.findAll().forEach(x->companies.add(x));
+        map.addAttribute("companies", companies);
+
+        List<String> images = new ArrayList<>();
+        for(Person p : persons)
+        {
+            images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+        }
+        map.addAttribute("images", images);
+
+        List<String> images2 = new ArrayList<>();
+        for(Company c : companies)
+        {
+            images2.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+        }
+        map.addAttribute("images2", images2);
+        return "allUsers";
     }
 
     @GetMapping("/addskill")
-    public String getAddSkill() {return "/addSkill";}
+    public String getAddSkill(ModelMap map)
+    {
+        List<Skill> skills = new ArrayList<>();
+        skillService.findAll().forEach(x->skills.add(x));
+        map.addAttribute("skills", skills);
+        return "addSkill";
+    }
 
     @PostMapping(path="/adds")
-    public @ResponseBody String addNewSkill (@RequestParam String name) {
+    public String addNewSkill (String name) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
         Skill s = new Skill();
         s.setName(name);
         skillService.save(s);
-        return "Saved";
+        return "redirect:/addskill";
+    }
+
+    @PostMapping("/deleteSkill")
+    public String deleteSkillAdmin (String name)
+    {
+        skillService.removeSkill(name);
+        return "redirect:/addskill";
+    }
+
+    @PostMapping("/deleteJobSkill")
+    public String deleteJobSkill (String name, String job)
+    {
+        Job j = jobService.findById(job);
+        jobService.removeSkill(name, j);
+        return "redirect:/addJobSkill?job="+job;
+    }
+
+    @PostMapping("/deleteJob")
+    public String deleteJob(String id, HttpServletRequest request)
+    {
+        jobService.removeJob(id);
+        if(request.isUserInRole("ADMIN"))
+        {
+            return "redirect:/browseJobs";
+        }
+        else
+        {
+            return "redirect:/viewPostedJobs";
+        }
+    }
+
+    @PostMapping("/editJob")
+    public String editJob(String job, HttpServletRequest request)
+    {
+        return "redirect:/editjob?job="+job.replace(" ", "%20");
+    }
+
+    @GetMapping("/editjob")
+    public String getEditJob(String job, ModelMap map)
+    {
+        map.addAttribute("job", job);
+        Job j = jobService.findById(job);
+        map.addAttribute("name", j.getName());
+        map.addAttribute("experienceLevel", j.getExperienceLevel().name());
+        map.addAttribute("description", j.getDescription());
+        map.addAttribute("location", j.getLocation());
+        map.addAttribute("industry", j.getIndustry());
+        return "editJob";
+    }
+
+    @PostMapping("/editj")
+    public String editJobDetails(String job, String name, String experienceLevel, String description,
+                                 String location, String industry)
+    {
+        jobService.editJob(job, name, experienceLevel, location, industry, description);
+        return "redirect:/viewPostedJobs";
     }
 
     @GetMapping(path="/allskills")
-    public @ResponseBody Iterable<Skill> getAllSkills() {
+    public String getAllSkills(ModelMap map) {
         // This returns a JSON or XML with the users
-        return skillService.findAll();
+        map.addAttribute("skills", skillService.findAll());
+        return "redirect:/addskill";
     }
 
     @GetMapping("/addcompany")
-    public String getAddCompany() {return "/addCompany";};
+    public String getAddCompany() {return "addCompany";}
 
     @PostMapping(path="/addc")
-    public String addNewCompany (Company c, BindingResult bindingResult) {
-        if(bindingResult.hasErrors())
+    public String addNewCompany (@RequestParam("image") MultipartFile image, Company c,
+                                 BindingResult bindingResult, HttpServletRequest request) {
+        if(bindingResult.hasErrors() && !bindingResult.hasFieldErrors("image"))
         {
-            return "/addCompany";
+            return "addCompany";
+        }
+        try {
+            c.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         companyService.save(c);
-        return "Saved";
+        if(request.isUserInRole("ADMIN"))
+        {
+            return "redirect:/allusers";
+        }
+        return "redirect:/login";
     }
 
-    @GetMapping(path="/allcompanies")
-    public @ResponseBody Iterable<Company> getAllCompanies() {
-        // This returns a JSON or XML with the users
-        return companyService.findAll();
-    }
-
-    @GetMapping(path="/alljobs")
-    public @ResponseBody Iterable<Job> getAllJobs() {
-        // This returns a JSON or XML with the users
-        return jobService.findAll();
+    @PostMapping("/deleteUser")
+    public String deleteSkill (String id)
+    {
+        User u = personService.findById(id);
+        if(u == null)
+        {
+            u = companyService.findById(id);
+            companyService.removeCompany((Company) u);
+        }
+        else {
+            personService.removePerson((Person) u);
+        }
+        return "redirect:/allusers";
     }
 }

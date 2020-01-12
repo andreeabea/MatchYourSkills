@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
+<html>
+<head>
+
+<style>
  html, body, h1, h2, h3, h4, h5 {
      	font-family: "Raleway", sans-serif
      }
@@ -138,3 +148,48 @@
      }
 
      .button1 {border-radius: 2px;}
+</style>
+</head>
+<body>
+
+	<form action="/editAccount" method="POST" enctype="multipart/form-data">
+		<div class="container">
+			<h1>Edit personal details</h1>
+			<hr>
+
+			<label for="name"><b>Name</b></label> <input type="text"
+				placeholder="${name}" name="name" ></br>
+
+			<label for="description"><b>Description</b></label> <input type="text"
+                placeholder="${description}" name="description"></br>
+
+            <label for="image"><b>Image</b></label>
+            <div><input type="file" accept="image/*" id="fileInput" name="image"/></div>
+            <script>
+               function chooseFile() {
+                  document.getElementById("fileInput").click();
+               }
+            </script>
+            <label for="phone"><b>Phone number</b></label> <input
+                        type="phone" pattern="+[0-9]{11}"
+                        placeholder="${phone}"
+                        name="phone">
+
+            <c:choose>
+                <c:when test="${isCompany}">
+                		<label for="address"><b>Website</b></label>
+                              <input type="text" placeholder="${website}" name="address">
+                	</c:when>
+
+            	<c:otherwise>
+            	        <label for="address"><b>Address</b></label>
+                                                <input type="text" placeholder="${address}" name="address">
+            	</c:otherwise>
+            </c:choose>
+
+			<button type="submit" class="registerbtn">Save</button>
+		</div>
+	</form>
+
+</body>
+</html>

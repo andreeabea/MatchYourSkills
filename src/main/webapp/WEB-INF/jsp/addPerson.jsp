@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
 <head>
-<c:url value="/css/style.css" var="jstlCss" />
-<link href="${jstlCss}" rel="stylesheet" />
+
 <style>
  html, body, h1, h2, h3, h4, h5 {
      	font-family: "Raleway", sans-serif
@@ -148,22 +150,8 @@
 </style>
 </head>
 <body>
-    <ul>
-      <li><img src="logo.png" style="width:50px;height:40px;"></li>
-      <li><a class="active" href="/home">Home</a></li>
-      <li><a href="/login">Login</a></li>
-      <li class="dropdown">
-                <a href="javascript:void(0)" class="dropbtn">Register</a>
-                <div class="dropdown-content">
-                  <a href="/addperson">As Person</a>
-                  <a href="/addcompany">As Company</a>
-                </div>
-      </li>
-      <li><a href="#contact">Contact</a></li>
-      <li style="float:right"><a href="#about">About</a></li>
-    </ul>
 
-	<form action="/addp" method="POST">
+	<form action="/addp" method="POST" enctype="multipart/form-data">
 		<div class="container">
 			<h1>Person register</h1>
 			<p>Please complete the form below</p>
@@ -182,7 +170,7 @@
                 placeholder="Describe yourself" name="description" required></br>
 
             <label for="image"><b>Image</b></label>
-            <div><input type="file" id="fileInput" name="image"/></div>
+            <div><input type="file" accept="image/*" id="fileInput" name="image"/></div>
             <script>
                function chooseFile() {
                   document.getElementById("fileInput").click();
@@ -192,6 +180,9 @@
                         type="phone" pattern="+[0-9]{11}"
                         placeholder="Enter Telephone Number (e.g. +40123456789)"
                         name="phone" required>
+
+            <label for="address"><b>Address</b></label>
+                        <input type="text" name="address">
 
             <label for="birthdayy"><b>Birthday</b></label>
             <input type="date" name="birthdayy">
@@ -203,8 +194,7 @@
               <option value="Other"> Other
             </select>
 
-			<button type="submit" class="registerbtn">Create</button>
-
+			<button type="submit" class="registerbtn">Submit</button>
 		</div>
 	</form>
 

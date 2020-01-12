@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -146,15 +152,6 @@
 </style>
 </head>
 <body>
-       <ul class="ulbar">
-                   <li class="libar"><img src="logo.png" style="width:50px;height:40px;"></li>
-                   <li class="libar"><a class="active" href="/home">Home</a></li>
-                   <li class="libar"><a href="/profilePage">Profile</a></li>
-                   <li class="libar"><a href="/browseJobs">Browse Jobs</a></li>
-                   <li class="libar"><a href="#contact">Contact</a></li>
-                   <li class="libar" style="float:right"><a href="#logout">Logout</a></li>
-                   <li class="libar" style="float:right"><a href="#about">About</a></li>
-        </ul>
 
 	<form action="/adds" method="POST">
 		<div class="container">
@@ -162,12 +159,25 @@
 			<hr>
 
 			<label for="name"><b>Name</b></label> <input type="text"
-				placeholder="Enter Name" name="name" required></br>
+            				placeholder="Enter Name" name="name" required></br>
 
 			<button type="submit" class="registerbtn">Add</button>
 
 		</div>
 	</form>
+	<form action="/home"><button type = "submit" class = "registerbtn">Finish</button></form>
+
+	<div class="container">
+            <div class="w3-bar">
+             <c:forEach var="listValue" items="${skills}">
+                		<form action="/deleteSkill" method="POST">
+                		    <p>${listValue.name}</p>
+                		    <input type=hidden name="name" value="${listValue.name}">
+                		    <button class="button button1">Delete</button>
+                		</form>
+             </c:forEach>
+             </div>
+        </div>
 
 </body>
 </html>

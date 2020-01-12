@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -147,27 +153,6 @@
 </head>
 <body>
 
-     <ul>
-          <li><img src="logo.png" style="width:50px;height:40px;"></li>
-          <li><a class="active" href="/home">Home</a></li>
-          <li><a href="/login">Login</a></li>
-          <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Register</a>
-                    <div class="dropdown-content">
-                      <a href="/addperson">As Person</a>
-                      <a href="/addcompany">As Company</a>
-                    </div>
-          </li>
-          <li><a href="#contact">Contact</a></li>
-          <li style="float:right"><a href="#about">About</a></li>
-        </ul>
-    <div class="container">
-        <ul>
-         <c:forEach var="listValue" items="${skills}">
-            					<li>${listValue.name}</li>
-         </c:forEach>
-         </ul>
-    </div>
 	<form action="/skillAdded" method="POST">
 		<div class="container">
 			<h1>Add skill</h1>
@@ -188,6 +173,19 @@
 
 		</div>
 	</form>
+	<form action="/profilePage"><button type = "submit" class = "registerbtn">Finish</button></form>
+
+	<div class="container">
+            <div class="w3-bar">
+             <c:forEach var="listValue" items="${skills}">
+                		<form action="/deletePersonSkill" method="POST">
+                		    <p>${listValue.name}</p>
+                		    <input type=hidden name="name" value="${listValue.name}">
+                		    <button class="button button1">Delete</button>
+                		</form>
+             </c:forEach>
+             </div>
+        </div>
 
 </body>
 </html>

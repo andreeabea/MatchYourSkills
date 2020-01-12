@@ -2,15 +2,9 @@ package com.website.entities;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-
-enum ExperienceLevel {Entry_Level, Internship, Associate, Mid_Senior, Director, Executive}
 
 @Document (collection = "job")
 public class Job {
@@ -26,7 +20,7 @@ public class Job {
 
     private String location;
 
-    private Company employer;
+    private String employerId;
 
     private Date datePosted;
 
@@ -98,21 +92,21 @@ public class Job {
         this.location = location;
     }
 
-    public Company getEmployer() {
-        return employer;
+    public String getEmployerId() {
+        return employerId;
     }
 
-    public void setEmployer(Company employer) {
-        this.employer = employer;
+    public void setEmployerId(String employerId) {
+        this.employerId = employerId;
     }
 
-    public Job(String id, String name, Set<Skill> skills, ExperienceLevel experienceLevel, String location, Company employer, Date datePosted, String industry, String description) {
+    public Job(String id, String name, Set<Skill> skills, ExperienceLevel experienceLevel, String location, String employerId, Date datePosted, String industry, String description) {
         this.id = id;
         this.name = name;
         this.skills = skills;
         this.experienceLevel = experienceLevel;
         this.location = location;
-        this.employer = employer;
+        this.employerId = employerId;
         this.datePosted = datePosted;
         this.industry = industry;
         this.description = description;

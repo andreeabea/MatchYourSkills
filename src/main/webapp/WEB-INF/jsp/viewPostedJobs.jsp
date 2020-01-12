@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
-<sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
 <head>
@@ -60,7 +59,6 @@
          .active {
            background-color: #4CAF50;
          }
-
          .libar a, .dropbtn {
            display: inline-block;
            color: white;
@@ -125,10 +123,10 @@
          }
 
          div {
-                    border-radius: 5px;
-                    background-color: #f2f2f2;
-                    padding: 20px;
-                  }
+           border-radius: 5px;
+           background-color: #f2f2f2;
+           padding: 20px;
+         }
 
          .button1 {border-radius: 2px;}
 
@@ -201,76 +199,76 @@
      display: table;
    }
 
- ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #333;
-      }
+   ul {
+           list-style-type: none;
+           margin: 0;
+           padding: 0;
+           overflow: hidden;
+           background-color: #333;
+         }
 
-      li {
-        float: left;
-        border-right:1px solid #bbb;
-      }
+         li {
+           float: left;
+           border-right:1px solid #bbb;
+         }
 
-      li:last-child {
-        border-right: none;
-      }
+         li:last-child {
+           border-right: none;
+         }
 
-      li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-      }
+         li a {
+           display: block;
+           color: white;
+           text-align: center;
+           padding: 14px 16px;
+           text-decoration: none;
+         }
 
-      li a:hover:not(.active) {
-        background-color: #555;
-      }
+         li a:hover:not(.active) {
+           background-color: #555;
+         }
 
-      .active {
-        background-color: #4CAF50;
-      }
-      li a, .dropbtn {
-        display: inline-block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-      }
+         .active {
+           background-color: #4CAF50;
+         }
+         li a, .dropbtn {
+           display: inline-block;
+           color: white;
+           text-align: center;
+           padding: 14px 16px;
+           text-decoration: none;
+         }
 
-      li a:hover, .dropdown:hover .dropbtn {
-        background-color: #4CAF50;
-      }
+         li a:hover, .dropdown:hover .dropbtn {
+           background-color: #4CAF50;
+         }
 
-      li.dropdown {
-        display: inline-block;
-      }
+         li.dropdown {
+           display: inline-block;
+         }
 
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-      }
+         .dropdown-content {
+           display: none;
+           position: absolute;
+           background-color: #f9f9f9;
+           min-width: 160px;
+           box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+           z-index: 1;
+         }
 
-      .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        text-align: left;
-      }
+         .dropdown-content a {
+           color: black;
+           padding: 12px 16px;
+           text-decoration: none;
+           display: block;
+           text-align: left;
+         }
 
-      .dropdown-content a:hover {background-color: #f1f1f1;}
+         .dropdown-content a:hover {background-color: #f1f1f1;}
 
-      .dropdown:hover .dropdown-content {
-        display: block;
-      }
+         .dropdown:hover .dropdown-content {
+           display: block;
+         }
 </style>
 </head>
 <body>
@@ -291,24 +289,25 @@
         <li class="li1">
                   <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
                   <h1>${listValue.name}</h1>
-                  <h3>Company: ${companies[loop.index].name}</h3>
+                  <h3>Company: ${name}</h3>
                   <h3>Date Posted: ${listValue.datePosted}</h3>
                   <h3>Required skills: ${listValue.skills}</h3>
                   <h3>Experience: ${listValue.experienceLevel}</h3>
-                  <c:choose>
-                    <c:when test="${isPerson}">
-                  <form action="/saveJob" method="POST">
-                  <input type="hidden" name="id" value= "${listValue.id}">
-                  <button type="submit" class="registerbtn">Save job</button></form>
-                  <button type="submit" class="registerbtn">View Company</button>
-                    </c:when>
-                    <c:when test="${isAdmin}">
-                        <form action="/deleteJob" method="POST">
-                                           <input type="hidden" name="id" value= "${listValue.id}">
-                                           <button type="submit" class="registerbtn">Delete job</button></form>
-                    </c:when>
-                  </c:choose>
-                </li>
+                  <h3>Industry: ${listValue.industry}</h3>
+</li>
+                  <form action="/editJob" method="POST">
+                    <input type="hidden" name="job" value= "${listValue.id}">
+                  <button type="submit" class="registerbtn">Edit job</button></form>
+
+                  <form action="/viewInterestedPeople" method="POST">
+                  <input type="hidden" name="job" value= "${listValue.id}">
+                  <button type="submit" class="registerbtn">View People Interested</button></form>
+
+                  <form action="/deleteJob" method="POST">
+                       <input type="hidden" name="id" value= "${listValue.id}">
+                   <button type="submit" class="registerbtn">Delete job</button></form>
+
+
         </c:forEach>
       </ul>
     </div>

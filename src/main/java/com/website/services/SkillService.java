@@ -11,8 +11,12 @@ public class SkillService {
     @Autowired
     SkillRepository skillRepo;
 
-    public Skill save(Skill p){
-        return skillRepo.save(p);
+    public Skill save(Skill s){
+        if(skillRepo.findByName(s.getName())!=null)
+        {
+            return null;
+        }
+        return skillRepo.save(s);
     }
 
     public Iterable<Skill> findAll(){
@@ -24,5 +28,14 @@ public class SkillService {
         if (name == null)
             return null;
         return skillRepo.findByName(name);
+    }
+
+    public void removeSkill(String name)
+    {
+        Skill s = findByName(name);
+        if(s!=null)
+        {
+            skillRepo.delete(s);
+        }
     }
 }

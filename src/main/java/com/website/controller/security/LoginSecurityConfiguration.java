@@ -30,7 +30,7 @@ public class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
         prov.setUserDetailsService(userDetailsService);
         prov.setPasswordEncoder(new BCryptPasswordEncoder());
         return prov;
-    };
+    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -39,14 +39,27 @@ public class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/home", "#news", "#contact", "#about", "/addperson", "/addp", "/addcompany").permitAll()
-                .antMatchers("/browseJobs", "/addPersonSkill").hasAnyRole("PERSON", "ADMIN")
-                .antMatchers("/postjob", "/addJobSkill").hasAnyRole("COMPANY", "ADMIN").antMatchers("/profilePage").hasAnyRole("PERSON","ADMIN","COMPANY")
-                .antMatchers("/allpersons","/addskill","/allskills","/allcompanies","/alljobs").hasAnyRole("ADMIN").anyRequest().authenticated().and().formLogin()
+        http.authorizeRequests().antMatchers("/home", "#news", "#contact", "#about", "/addperson", "/addp", "/addcompany", "/addc", "/logo.png").permitAll()
+                .antMatchers("/browseJobs", "/addPersonSkill","/saveJob","/skillAdded").hasAnyRole("PERSON", "ADMIN")
+                .antMatchers("/postjob", "/addJobSkill", "/addj","/interestedPeople","/viewInterestedPeople","/deleteJob", "/skillsToJob","/editManager").hasAnyRole("COMPANY", "ADMIN")
+                .antMatchers("/profilePage", "/profileCompany").hasAnyRole("PERSON","ADMIN","COMPANY")
+                .antMatchers("/allusers","/addskill","/allskills","/adds","/deleteSkill").hasAnyRole("ADMIN").anyRequest().authenticated().and().formLogin()
+                //.loginPage("/home")
+                //.loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/home", true)
                 .permitAll().and().logout().permitAll();
 
         http.csrf().disable();
     }
+
+//    @Override
+//    public void configure(AuthenticationManagerBuilder builder)
+//            throws Exception {
+//        builder.inMemoryAuthentication()
+//                .withUser("admin")
+//                .password("123")
+//                .roles("ADMIN");
+//    }
 
 //    @Autowired
 //    public void configureGlobal(AuthenticationManagerBuilder authenticationMgr)
@@ -56,4 +69,5 @@ public class LoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                "ROLE_ADMIN");
 //
 //    }
+
 }

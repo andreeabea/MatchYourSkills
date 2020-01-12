@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -178,18 +181,13 @@
                      background-color: #5DB7DE;
                   }
 
+                  form {
+                      display: inline-block; //Or display: inline;
+                  }
+
 </style>
 </head>
 <body>
-    <ul class="ulbar">
-              <li class="libar"><img src="logo.png" style="width:50px;height:40px;"></li>
-              <li class="libar"><a class="active" href="/home">Home</a></li>
-              <li class="libar"><a href="/profilePage">Profile</a></li>
-              <li class="libar"><a href="/browseJobs">Browse Jobs</a></li>
-              <li class="libar"><a href="#contact">Contact</a></li>
-              <li class="libar" style="float:right"><a href="#logout">Logout</a></li>
-              <li class="libar" style="float:right"><a href="#about">About</a></li>
-         </ul>
 
 	<!-- Page Container -->
     <div class="w3-content w3-margin-top" style="max-width:1400px;">
@@ -202,43 +200,21 @@
 
           <div class="w3-white w3-text-grey w3-card-4">
             <div class="w3-display-container">
-              <img src="userlogo.png" style="width:100%" alt="Avatar">
+              <img src="data:image/jpg;base64,${image}" style="width:100%" alt="Avatar">
               <div class="w3-display-bottomleft w3-container w3-text-black">
-                <h2>Andreea</h2>
+                <h2>${name}</h2>
               </div>
             </div>
             <div class="w3-container" >
-              <p class="w3-large"><i class="fa fa-briefcase fa-fw w3-margin-right" ></i>Software Developer</p>
-              <p class ="w3-large"><i class="fa fa-home fa-fw w3-margin-right"></i>Cluj-Napoca, Romania</p>
-              <p class ="w3-large"><i class="fa fa-fw w3-margin-right"></i>Birthdate: 10.12.1980</p>
-              <p class ="w3-large"><i class="fa fa-envelope fa-fw w3-margin-right"></i>ex@gmail.com</p>
-              <p class ="w3-large"><i class="fa fa-phone fa-fw w3-margin-right"></i>0748582362</p>
+              <p class="w3-large"><i class="fa fa-briefcase fa-fw w3-margin-right" ></i>${currentJob.name}</p>
+              <p class ="w3-large"><i class="fa fa-home fa-fw w3-margin-right"></i>${address}</p>
+              <p class ="w3-large"><i class="fa fa-fw w3-margin-right"></i>Birthdate: ${birthday}</p>
+              <p class ="w3-large"><i class="fa fa-envelope fa-fw w3-margin-right"></i>${email}</p>
+              <p class ="w3-large"><i class="fa fa-phone fa-fw w3-margin-right"></i>${phone}</p>
+              <p class ="w3-large"><i class="fa fa-fw w3-margin-right"></i>${description}</p>
               <hr>
 
-              <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right"></i>Skills</b></p>
-              <p>Java</p>
-              <div class="w3-light-grey w3-round-xlarge w3-small">
-                <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:90%">90%</div>
-              </div>
-              <p>OOP</p>
-              <div class="w3-light-grey w3-round-xlarge w3-small">
-                <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:75%">75%</div>
-              </div>
-              <p>SQL</p>
-              <div class="w3-light-grey w3-round-xlarge w3-small">
-                <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:50%">50%</div>
-              </div>
-              <br>
 
-              <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right"></i>Languages</b></p>
-                            <p>English</p>
-                            <div class="w3-light-grey w3-round-xlarge w3-small">
-                              <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:95%">95%</div>
-                            </div>
-                            <p>French</p>
-                            <div class="w3-light-grey w3-round-xlarge w3-small">
-                              <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:60%">60%</div>
-                            </div>
 
             </div>
           </div><br>
@@ -250,39 +226,52 @@
         <div class="w3-twothird">
 
           <div class="w3-container w3-card w3-white w3-margin-bottom">
-            <h2 class="w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-green"></i>Work Experience</h2>
+            <h2 class="w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-green"></i>Experience</h2>
             <div class="w3-container">
-              <h5 class="w3-opacity"><b>Software Developer / Google</b></h5>
-              <h6 class="w3-text-green"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Jan 2017 - <span class="w3-tag w3-green w3-round">Current</span></h6>
-              <p>Worked on a project using Java and Spring framework</p>
+              <h5 class="w3-opacity"><b>${currentJob.name} - ${currentJob.experienceLevel} / ${employer}</b></h5>
+              <h6 class="w3-text-green"><i class="fa fa-calendar fa-fw w3-margin-right"></i>${startDate} - <span class="w3-tag w3-green w3-round">Current</span>, ${currentJob.location}</h6>
+              <p>${currentJob.description}</p>
+
               <hr>
-            </div>
-            <div class="w3-container">
-              <h5 class="w3-opacity"><b>Web Developer / Facebook</b></h5>
-              <h6 class="w3-text-green"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Mar 2015 - Dec 2017</h6>
-              <p>Got more experience</p>
-              <hr>
+              <c:choose>
+                              <c:when test="${isPerson}">
+               <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right"></i>Skills</b></p>
+                                          <c:forEach var="listValue" items="${skills}">
+                                          <p>${listValue.name}</p>
+                                          <div class="w3-light-grey w3-round-xlarge w3-small">
+                                            <div class="w3-container w3-center w3-round-xlarge w3-green" style="width:${listValue.percentage}%">${listValue.percentage}%</div>
+                                          </div>
+                                          </c:forEach>
+                                          <br>
+               <div class="w3-bar">
+                  <center><form action = "/addCurrentJob"><button class="button button2">Edit Current Job</button></form>
+                  <form action = "/addPersonSkill"><button class="button button1">Edit Skills</button></form></center>
+               </div>
             </div>
 
           </div>
 
           <div class="w3-container w3-card w3-white">
-            <h2 class="w3-padding-16"><i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-green"></i>Education</h2>
             <div class="w3-container">
-              <h5 class="w3-opacity"><b>Google Digital Workshop Courses</b></h5>
-              <h6 class="w3-text-green"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2018-2019</h6>
-              <p>Attended Java courses</p>
+                <div class="w3-bar">
+                <center><form action = "/addCV"><button class="button button2">Add CV</button></form>
+                <form action = "/savedJobs"><button class="button button1">Saved Jobs</button></form></center>
               <hr>
+              </div>
             </div>
           </div>
+          </c:when>
+          <c:otherwise>
+          <div class="w3-bar">
+            <center><form action = "/addCurrentJob"><button class="button button2">Edit Current Job</button></form>
+          </div>
+          </c:otherwise>
+          </c:choose>
 
         <!-- End Right Column -->
 
         <hr>
-        <center>
-            <button class="button button2">Edit Profile</button></center>
-        <center>    <button class="button button1">Saved Jobs</button> </center>
-            <hr>
+
 
         </div>
 

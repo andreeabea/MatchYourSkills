@@ -1,11 +1,15 @@
 <!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
+<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
 <html>
 <head>
+
 <style>
-     html, body, h1, h2, h3, h4, h5 {
+ html, body, h1, h2, h3, h4, h5 {
      	font-family: "Raleway", sans-serif
      }
      /* Overwrite default styles of hr */
@@ -146,43 +150,25 @@
 
      .button1 {border-radius: 2px;}
 </style>
+</head>
 <body>
 
-	<form action="/addc" method="POST" enctype="multipart/form-data">
+	<form action="/changePassword" method="POST" enctype="multipart/form-data">
 		<div class="container">
-			<h1>Company register</h1>
-			<p>Please complete the form below</p>
+			<h1>Change account password</h1>
 			<hr>
 
-			<label for="name"><b>Name</b></label> <input type="text"
-				placeholder="Enter Name" name="name" required></br>
+			<label for="password"><b>Old password</b></label>
+			<input type="password" name="password" required></br>
 
-			<label for="email"><b>Email</b></label> <input type="email"
-				placeholder="Enter Email" name="email" required></br>
+			<label for="passwordNew1"><b>New password</b></label>
+            			<input type="password" name="passwordNew1" required></br>
 
-			<label for="password"><b>Password</b></label> <input type="password"
-            				placeholder="Enter Password" name="password" required></br>
+            <label for="passwordNew2"><b>Enter new password again</b></label>
+            			<input type="password" name="passwordNew2" required></br>
 
-			<label for="description"><b>Description</b></label> <input type="text"
-                placeholder="Describe yourself" name="description" required></br>
 
-            <label for="image"><b>Image</b></label>
-            <div><input type="file" accept="image/*" id="fileInput" name="image"/></div>
-            <script>
-               function chooseFile() {
-                  document.getElementById("fileInput").click();
-               }
-            </script>
-            <label for="phone"><b>Phone number</b></label> <input
-                        type="phone" pattern="+[0-9]{11}"
-                        placeholder="Enter Telephone Number (e.g. +40123456789)"
-                        name="phone" required>
-
-            <label for="website"><b>Website</b></label> <input type="text"
-            	placeholder="Enter Website Address" name="website" required></br>
-
-			<button type="submit" class="registerbtn">Submit</button>
-
+			<button type="submit" class="registerbtn">Save</button>
 		</div>
 	</form>
 

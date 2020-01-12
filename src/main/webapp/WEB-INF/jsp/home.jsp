@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
+<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
 <head>
 <style>
@@ -164,29 +168,15 @@
 </style>
 </head>
 <body>
-    <ul>
-          <li><img src="logo.png" style="width:50px;height:40px;"></li>
-          <li><a class="active" href="/home">Home</a></li>
-          <li><a href="/login">Login</a></li>
-          <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Register</a>
-                    <div class="dropdown-content">
-                      <a href="/addperson">As Person</a>
-                      <a href="/addcompany">As Company</a>
-                    </div>
-          </li>
-          <li><a href="#contact">Contact</a></li>
-          <li style="float:right"><a href="#about">About</a></li>
-        </ul>
 
     <center><h1>MatchYourSkills</h1></center>
     <center><h2>Welcome!</h2></center>
 
     <center>
-    <button class="button button1">Looking for a job?</button>
-    <button class="button button2">Searching for talents?</button></center>
+    <form action="/addperson"><button class="button button1">Looking for a job?</button></form>
+    <form action="/addcompany"><button class="button button2">Searching for talents?</button></form></center>
     <hr>
-	<form action="/login" method="POST">
+	<form action="login" method="POST">
 		<div class="container">
 		<p>Or do you have an account?</p>
             <h1>Login</h1>

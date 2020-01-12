@@ -1,5 +1,6 @@
 package com.website.entities;
 
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -8,17 +9,17 @@ import java.util.Set;
 @Document(collection = "company")
 public class Company extends User {
 
-    private List<Job> availableJobs;
-
     private String website;
 
-    public List<Job> getAvailableJobs() {
-        return availableJobs;
+    public Person getManager() {
+        return manager;
     }
 
-    public void setAvailableJobs(List<Job> availableJobs) {
-        this.availableJobs = availableJobs;
+    public void setManager(Person manager) {
+        this.manager = manager;
     }
+
+    private Person manager;
 
     public String getWebsite() {
         return website;
@@ -28,9 +29,8 @@ public class Company extends User {
         this.website = website;
     }
 
-    public Company(String id, String name, String email, byte[] image, String description, String phone, String password, List<Job> availableJobs, Set<Person> people, String website) {
+    public Company(String id, String name, String email, Binary image, String description, String phone, String password, Set<Person> people, String website) {
         super(id, name, email, image, description, phone, password);
-        this.availableJobs = availableJobs;
         this.website = website;
     }
 

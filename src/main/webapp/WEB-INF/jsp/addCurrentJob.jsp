@@ -2,11 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
-<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <html>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -153,37 +150,40 @@
 </head>
 <body>
 
-	<form action="/skillsToJob" method="POST">
+	<form action="/addCurrentJ" method="POST">
 		<div class="container">
-			<h1>Add skills to the job</h1>
+			<h1>Post a new job</h1>
+			<hr>
 
-            <label for="skills"><b>Job required skills</b></label>
-			<select name="name">
-                   <c:forEach var="listValue" items="${allSkills}">
-                                 <option value="${listValue}">${listValue}</option>
-                   </c:forEach>
-            </select>
+			<label for="name"><b>Name</b></label>
+			<input type="text" placeholder="Enter Job Name" name="name" required></br>
 
-            <input name="job" type="hidden" value="${job}">
+            <label for="employer"><b>Employer name</b></label>
+            			<input type="text" placeholder="Enter Employer's name" name="employer" required></br>
 
-			<button type="submit" class="registerbtn">Add</button>
+			<label for="experienceLevel"><b>Experience Level</b></label>
+			<select name="experienceLevel" required>
+			    <option value = "Entry_Level">Entry Level</option>
+			    <option value = "Internship">Internship</option>
+			    <option value = "Associate">Associate</option>
+			    <option value = "Mid_Senior">Mid Senior</option>
+			    <option value = "Director">Director</option>
+			    <option value = "Executive">Executive</option>
+			</select>
+
+            <label for="birthdayy"><b>Start date</b></label>
+                        <input type="date" name="birthdayy">
+
+			<label for="location"><b>Location</b></label>
+            <input type="text" placeholder="Enter Job Location" name="location" required></br>
+
+            <label for="description"><b>Description</b></label>
+                        <input type="text" placeholder="Job's description, requirements, benefits" name="description" required></br>
+
+			<button type="submit" class="registerbtn">Save</button>
 
 		</div>
 	</form>
 
-    <form action="/viewPostedJobs"><button type = "submit" class = "registerbtn">Finish</button></form>
-
-    <div class="container">
-                <div class="w3-bar">
-                 <c:forEach var="listValue" items="${skills}">
-                    		<form action="/deleteJobSkill" method="POST">
-                    		    <p>${listValue.name}</p>
-                    		    <input type=hidden name="name" value="${listValue.name}">
-                    		    <input type=hidden name="job" value="${job}">
-                    		    <button class="button button1">Delete</button>
-                    		</form>
-                 </c:forEach>
-                 </div>
-            </div>
 </body>
 </html>

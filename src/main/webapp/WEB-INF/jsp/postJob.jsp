@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
 <head>
 <style>
@@ -147,16 +151,6 @@
 </head>
 <body>
 
-     <ul class="ulbar">
-                 <li class="libar"><img src="logo.png" style="width:50px;height:40px;"></li>
-                 <li class="libar"><a class="active" href="/home">Home</a></li>
-                 <li class="libar"><a href="/profilePage">Profile</a></li>
-                 <li class="libar"><a href="/browseJobs">Browse Jobs</a></li>
-                 <li class="libar"><a href="#contact">Contact</a></li>
-                 <li class="libar" style="float:right"><a href="#logout">Logout</a></li>
-                 <li class="libar" style="float:right"><a href="#about">About</a></li>
-     </ul>
-
 	<form action="/addj" method="POST">
 		<div class="container">
 			<h1>Post a new job</h1>
@@ -167,7 +161,7 @@
 
 			<label for="experienceLevel"><b>Experience Level</b></label>
 			<select name="experienceLevel" required>
-			    <option value = "Entry_level">Entry level</option>
+			    <option value = "Entry_Level">Entry Level</option>
 			    <option value = "Internship">Internship</option>
 			    <option value = "Associate">Associate</option>
 			    <option value = "Mid_Senior">Mid Senior</option>
