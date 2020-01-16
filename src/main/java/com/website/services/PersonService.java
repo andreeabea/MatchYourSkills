@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -84,6 +85,7 @@ public class PersonService {
         {
             p.addJob(j);
         }
+        //j.addObserver(p);
         return personRepo.save(p);
     }
 
@@ -139,5 +141,56 @@ public class PersonService {
             p.setJobs(jobs);
             personRepo.save(p);
         }
+    }
+
+    public Person updateCV(String id, Binary image)
+    {
+        if(image!=null && id!=null)
+        {
+            Person p = personRepo.findById(id).orElse(null);
+            if(image!=null)
+            {
+                p.setCV(image);
+            }
+            return personRepo.save(p);
+        }
+        return null;
+    }
+
+    public List<Person> findPeople(String search, String searchType, String jobId)
+    {
+        SearchFilter searchFilter = SearchFilter.getSearchFilter();
+        String filteredResult = searchFilter.filterSearch(search);
+
+        if(filteredResult==null || filteredResult.equals(""))
+        {
+            return null;
+        }
+
+        List<Person> foundPeople = new ArrayList<>();
+        foundPeople.addAll(personRepo.findByNameLike(filteredResult));
+
+        if(searchType.equals("people") && jobId!=null)
+        {
+            List<Person> foundPeople2 = new ArrayList<>();
+            if(foundPeople!=null)
+            {
+                for(Person p : foundPeople)
+                {
+                    if(p.getJobs()!=null)
+                    {
+                        for(Job j: p.getJobs())
+                        {
+                            if(!j.getId().equals(jobId))
+                            {
+                                  foundPeople2.add(p);
+                            }
+                        }
+                    }
+                }
+                foundPeople =foundPeople2;
+            }
+        }
+        return foundPeople.stream().filter(SearchFilter.distinctById(Person::getId)).collect(Collectors.toList());
     }
 }

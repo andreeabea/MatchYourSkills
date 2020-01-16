@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <html>
 <meta charset="UTF-8">
@@ -233,8 +234,8 @@
               <p>${currentJob.description}</p>
 
               <hr>
-              <c:choose>
-                              <c:when test="${isPerson}">
+
+
                <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right"></i>Skills</b></p>
                                           <c:forEach var="listValue" items="${skills}">
                                           <p>${listValue.name}</p>
@@ -243,6 +244,8 @@
                                           </div>
                                           </c:forEach>
                                           <br>
+               <c:choose>
+               <c:when test="${isPerson}">
                <div class="w3-bar">
                   <center><form action = "/addCurrentJob"><button class="button button2">Edit Current Job</button></form>
                   <form action = "/addPersonSkill"><button class="button button1">Edit Skills</button></form></center>
@@ -250,23 +253,25 @@
             </div>
 
           </div>
-
+            </c:when>
+                      </c:choose>
           <div class="w3-container w3-card w3-white">
             <div class="w3-container">
                 <div class="w3-bar">
-                <center><form action = "/addCV"><button class="button button2">Add CV</button></form>
+
+                <center><form action = "/viewCV" method="POST">
+                <input type="hidden" name="id" value= "${id}">
+                <button class="button button2">View CV</button></form>
+                <c:choose>
+                               <c:when test="${isPerson}">
                 <form action = "/savedJobs"><button class="button button1">Saved Jobs</button></form></center>
-              <hr>
+                </c:when>
+                          </c:choose>
+
               </div>
             </div>
           </div>
-          </c:when>
-          <c:otherwise>
-          <div class="w3-bar">
-            <center><form action = "/addCurrentJob"><button class="button button2">Edit Current Job</button></form>
-          </div>
-          </c:otherwise>
-          </c:choose>
+
 
         <!-- End Right Column -->
 

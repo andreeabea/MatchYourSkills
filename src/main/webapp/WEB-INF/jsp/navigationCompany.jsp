@@ -163,7 +163,9 @@
                           <li class="libar"><img src="logo.png" style="width:50px;height:40px;"></li>
                           <li class="libar"><a class="active" href="/home">Home</a></li>
                           <li class="libar"><a href="/profileCompany">Profile</a></li>
+                          <li class="libar"><a href="/viewPostedJobs">Your jobs</a></li>
                           <li class="libar"><a href="/postjob">Post a job</a></li>
+
                           <li class="dropdown">
                                         <a href="javascript:void(0)" class="dropbtn">Account</a>
                                                    <div class="dropdown-content">

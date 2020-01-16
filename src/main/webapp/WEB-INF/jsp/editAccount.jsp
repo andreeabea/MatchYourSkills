@@ -4,6 +4,7 @@
 <jsp:include page="navigationBars.jsp" />
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <sec:authorize access="hasRole('PERSON')" var="isPerson" />
+<sec:authorize access="hasRole('COMPANY')" var="isCompany" />
 <html>
 <head>
 
@@ -177,8 +178,12 @@
 
             <c:choose>
                 <c:when test="${isCompany}">
+                <label for="location"><b>Location</b></label>
+                          <input type="text" placeholder="${location}" name="location">
                 		<label for="address"><b>Website</b></label>
                               <input type="text" placeholder="${website}" name="address">
+
+
                 	</c:when>
 
             	<c:otherwise>

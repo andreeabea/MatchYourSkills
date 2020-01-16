@@ -5,6 +5,11 @@
 <sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -139,8 +144,9 @@
 
 .ul1 {
   list-style-type: none;
-  width: 500px;
+  width: 700px;
   background-color: #f2f2f2;
+  margin:5px;
 }
 
 .li1 img {
@@ -188,6 +194,7 @@
      border: 1px solid grey;
      border-left: none;
      cursor: pointer;
+     align:top;
    }
 
    form.example button:hover {
@@ -209,7 +216,7 @@
          }
 
          li {
-           float: left;
+           /* float: left;*/
            border-right:1px solid #bbb;
          }
 
@@ -278,8 +285,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <hr>
     <!-- The form -->
-    <form class="example" action="/action_page.php">
+    <form class="example" action="/browseSearchResults2" method="POST" >
       <input type="text" placeholder="Search.." name="search">
+      <input type="hidden" name="searchType" value= "users">
       <button type="submit"><i class="fa fa-search"></i></button>
     </form>
 
@@ -288,13 +296,13 @@
 
             <c:forEach var="listValue" items="${persons}" varStatus="loop">
             <li class="li1">
-                      <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
-                      <h1>${listValue.name}</h1>
-                      <h3>Description: ${listValue.address}</h3>
-                      <h3>Current job: ${listValue.currentJob.name} - ${listValue.currentJob.experienceLevel}</h3>
-                      <h3>Email: ${listValue.email}</h3>
-                      <h3>Skills: ${listValue.skills}</h3>
-                      <h3>Description: ${listValue.description}</h3>
+                      <img style="width:130px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
+                      <h5 class="w3-opacity"><b>${listValue.name}</b></h5>
+                      <h5 class="w3-opacity"><b>Current job: ${listValue.currentJob.name} - ${listValue.currentJob.experienceLevel}</b></h5>
+                      <h6 class="w3-text-green"><b>Skills: ${listValue.skills}</b></h6>
+                      <h6 class="w3-text-green"><b>Email: ${listValue.email}</b></h6>
+                      <h6>Address: ${listValue.address}</h6>
+                      <h6>Description: ${listValue.description}</h6>
 
                        <form action="/deleteUser" method="POST">
                          <input type="hidden" name="id" value= "${listValue.id}">
@@ -309,11 +317,13 @@
 
                     <c:forEach var="listValue" items="${companies}" varStatus="loop">
                     <li class="li1">
-                              <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images2[loop.index]}"/>
-                              <h1>${listValue.name}</h1>
-                              <h3>Email: ${listValue.email}</h3>
-                              <h3>Description: ${listValue.description}</h3>
-                               <h3>Website: ${listValue.website}</h3>
+                              <img style="width:130px;height:140px;" src="data:image/jpg;base64,${images2[loop.index]}"/>
+                              <h5 class="w3-opacity"><b>${listValue.name}</b></h5>
+                              <h6 class="w3-text-green"><b>Email: ${listValue.email}</b></h6>
+                              <h6 class="w3-text-green"><b>Manager email: ${listValue.manager.email}</b></h6>
+                               <h6 class="w3-text-green"><b>Website: ${listValue.website}</b></h6>
+                               <h6 class="w3-text-green"><b>Phone: ${listValue.phone}</b></h6>
+                              <h6>Description: ${listValue.description}</h6>
 
                                <form action="/deleteUser" method="POST">
                                  <input type="hidden" name="id" value= "${listValue.id}">

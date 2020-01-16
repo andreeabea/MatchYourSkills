@@ -1,11 +1,11 @@
 package com.website.entities;
 
+import com.website.services.PersonService;
 import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Document(collection = "person")
 public class Person extends User {
@@ -16,6 +16,16 @@ public class Person extends User {
 
     private Gender gender;
 
+    public Binary getCV() {
+        return CV;
+    }
+
+    public void setCV(Binary CV) {
+        this.CV = CV;
+    }
+
+    private Binary CV;
+
     public String getAddress() {
         return address;
     }
@@ -25,9 +35,12 @@ public class Person extends User {
     }
 
     public boolean interestedIn(Job job){
-        for(Job j : jobs){
-            if(j.getId().equals(job.getId()))
-                return true;
+        if(jobs!=null)
+        {
+            for(Job j : jobs){
+                if(j.getId().equals(job.getId()))
+                    return true;
+            }
         }
         return false;
     }
@@ -78,12 +91,14 @@ public class Person extends User {
         this.jobs = jobs;
     }
 
-    public Person(String id, String name, String email, Binary image, String description, String phone, String password, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs) {
+    public Person(String id, String name, String email, Binary image, String description, String phone,
+                  String password, Set<Skill> skills, Date birthday, Gender gender, List<Job> jobs, Binary CV) {
         super(id, name, email, image, description, phone, password);
         this.skills = skills;
         this.birthday = birthday;
         this.gender = gender;
         this.jobs = jobs;
+        this.CV = CV;
     }
 
     public Person()
@@ -95,4 +110,11 @@ public class Person extends User {
     {
         this.jobs.add(j);
     }
+
+//    @Override
+//    public void update(Observable o, Object arg) {
+//        PersonService ps = new PersonService();
+//        //Job j = (Job) o;
+//        //List<Job> jbs = jobs.stream().filter(x -> !x.getId().equals(j.getId())).collect(Collectors.toList());
+//    }
 }

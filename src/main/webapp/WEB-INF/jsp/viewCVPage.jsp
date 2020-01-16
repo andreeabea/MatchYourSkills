@@ -3,7 +3,6 @@
 <jsp:include page="navigationBars.jsp" />
 <sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <sec:authorize access="hasRole('COMPANY')" var="isCompany" />
-<sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
 <head>
 <style>
@@ -24,7 +23,7 @@
          	margin: 8px 0;
          	border: none;
          	cursor: pointer;
-         	width: 100%;
+         	width: 50%;
          	opacity: 0.9;
          }
 
@@ -107,7 +106,7 @@
          /*form inputs*/
 
          input[type=text], input[type=email], input[type=password], select {
-           width: 100%;
+           width: 50%;
            padding: 12px 20px;
            margin: 8px 0;
            display: inline-block;
@@ -170,48 +169,55 @@
                            }
 
          .enjoy-css {
-            background-image: url("/logo.png");
+         /*<img src="data:image/jpg;base64,${image}" style="width:100%" >*/
+             background-image: url("data:image/jpg;base64,${image}");
              background-color: rgba(0, 0, 0, 0.1);
              height: 750px;
              background-position: center;
              background-repeat: no-repeat;
-             background-size: 45%;
+             background-size: 30%;
              position: relative;
          }
 
          .centered {
            background-color: rgba(0, 0, 0, 0.5);
            position: absolute;
-           top: 50%;
-           left: 50%;
+           top: 30%;
+           left: 18%;
            /* bring your own prefixes */
-           transform: translate(-50%, -50%);
+           transform: translate(-100%, -100%);
          }
 
          .centered:hover
          {
             background-color: rgba(0, 0, 0, 0.6);
          }
+
 </style>
 </head>
 <body>
 
 <div class="enjoy-css">
 
+    <c:choose>
+    <c:when test="${isPerson}">
 <div class="centered">
-    <center><h1>MatchYourSkills</h1></center>
-        <center><h2>Welcome!</h2></center>
-    <center>
+    <form action="/addCV" method="POST" enctype="multipart/form-data">
 
-    <sec:authorize access="isAnonymous()">
-    <form action="/addperson"><button class="button button1">Looking for a job?</button></form>
-    <form action="/addcompany"><button class="button button2">Searching for talents?</button></form></center>
-    </sec:authorize>
-
-
+    <label for="image"><b>Image</b></label>
+                <div><input type="file" accept="image/*" id="fileInput" name="image"/></div>
+                <script>
+                   function chooseFile() {
+                      document.getElementById("fileInput").click();
+                   }
+                </script>
+     <input type="hidden" name="id" value= "${id}">
+    <button class="button button1">Save CV</button></form>
 
     <hr>
-    </div>
+</div>
+  </c:when>
+    </c:choose>
     </div>
 
 </body>

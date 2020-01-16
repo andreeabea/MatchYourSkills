@@ -152,33 +152,40 @@
 
 	<form action="/addCurrentJ" method="POST">
 		<div class="container">
-			<h1>Post a new job</h1>
+			<h1>Update Current Job</h1>
 			<hr>
 
 			<label for="name"><b>Name</b></label>
-			<input type="text" placeholder="Enter Job Name" name="name" required></br>
+			<input type="text" placeholder="${name}" name="name"></br>
 
             <label for="employer"><b>Employer name</b></label>
-            			<input type="text" placeholder="Enter Employer's name" name="employer" required></br>
+            			<input type="text" placeholder="${employer}" name="employer"></br>
 
 			<label for="experienceLevel"><b>Experience Level</b></label>
 			<select name="experienceLevel" required>
-			    <option value = "Entry_Level">Entry Level</option>
-			    <option value = "Internship">Internship</option>
-			    <option value = "Associate">Associate</option>
-			    <option value = "Mid_Senior">Mid Senior</option>
-			    <option value = "Director">Director</option>
-			    <option value = "Executive">Executive</option>
+			    <option id = "Entry_Level" value = "Entry_Level">Entry Level</option>
+			    <option id = "Internship" value = "Internship">Internship</option>
+			    <option id = "Associate" value = "Associate">Associate</option>
+			    <option id = "Mid_Senior" value = "Mid_Senior">Mid Senior</option>
+			    <option id = "Director" value = "Director">Director</option>
+			    <option id = "Executive" value = "Executive">Executive</option>
 			</select>
 
+			<script>
+                        function myFunction() {
+                          document.getElementById("${experienceLevel}").selected = "true";
+                        }
+                        myFunction();
+                        </script>
+
             <label for="birthdayy"><b>Start date</b></label>
-                        <input type="date" name="birthdayy">
+                        <input type="date" name="birthdayy" placeholder="${startDate}" required>
 
 			<label for="location"><b>Location</b></label>
-            <input type="text" placeholder="Enter Job Location" name="location" required></br>
+            <input type="text" placeholder="${location}" name="location"></br>
 
             <label for="description"><b>Description</b></label>
-                        <input type="text" placeholder="Job's description, requirements, benefits" name="description" required></br>
+                        <input type="text" placeholder="${description}" name="description"></br>
 
 			<button type="submit" class="registerbtn">Save</button>
 

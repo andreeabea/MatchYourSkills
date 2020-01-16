@@ -1,14 +1,12 @@
 package com.website.controller;
 
-import com.website.services.CompanyService;
-import com.website.services.JobService;
-import com.website.services.PersonService;
-import com.website.services.SkillService;
+import com.website.services.*;
 import com.website.entities.*;
 import com.website.entities.Person;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,10 +44,19 @@ public class MainController {
     }
 
     @GetMapping("/profilePage")
-    public String getProfilePage(ModelMap map, Principal principal)
+    public String getProfilePage(ModelMap map, Principal principal, String person)
     {
-        String email = principal.getName();
-        Person currentUser = personService.findByEmail(email);
+        Person currentUser = null;
+        if(person==null)
+        {
+            String email = principal.getName();
+            currentUser = personService.findByEmail(email);
+        }
+        else
+        {
+            currentUser = personService.findById(person);
+        }
+
         if(currentUser.getCurrentJob()!=null)
         {
             map.addAttribute("currentJob",currentUser.getCurrentJob());
@@ -58,47 +65,118 @@ public class MainController {
         {
             map.addAttribute("birthday", new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getBirthday()));
         }
-        map.addAttribute("email", currentUser.getEmail());
-        map.addAttribute("skills", currentUser.getSkills());
-        map.addAttribute("phone", currentUser.getPhone());
-        map.addAttribute("description", currentUser.getDescription());
+        if(currentUser.getEmail()!=null)
+        {
+            map.addAttribute("email", currentUser.getEmail());
+            map.addAttribute("id", currentUser.getId());
+        }
+        if(currentUser.getSkills()!=null)
+        {
+            map.addAttribute("skills", currentUser.getSkills());
+        }
+        if(currentUser.getPhone()!=null)
+        {
+            map.addAttribute("phone", currentUser.getPhone());
+        }
+        if(currentUser.getDescription()!=null)
+        {
+            map.addAttribute("description", currentUser.getDescription());
+        }
         if(currentUser.getImage()!=null)
         {
             map.addAttribute("image", Base64.getEncoder().encodeToString(currentUser.getImage().getData()));
         }
-        map.addAttribute("name", currentUser.getName());
-        map.addAttribute("address",currentUser.getAddress());
+        if(currentUser.getName()!=null)
+        {
+            map.addAttribute("name", currentUser.getName());
+        }
+        if(currentUser.getAddress()!=null)
+        {
+            map.addAttribute("address",currentUser.getAddress());
+        }
         Job currentJob = currentUser.getCurrentJob();
         if(currentJob!=null)
         {
             map.addAttribute("currentJob", currentJob);
-            map.addAttribute("startDate", new SimpleDateFormat("dd/MM/yyyy").format(currentJob.getDatePosted()));
+            if(currentJob.getDatePosted()!=null)
+            {
+                map.addAttribute("startDate", new SimpleDateFormat("dd/MM/yyyy").format(currentJob.getDatePosted()));
+            }
             map.addAttribute("employer", currentJob.getEmployerId());
         }
 
         return "profilePage";
     }
 
-    @GetMapping("/addCurrentJob")
-    public String getAddCurrentJob()
+    @PostMapping("/viewProfilePage")
+    public String viewProfilePage(String person)
     {
+        return "redirect:/profilePage?person="+person.replace(" ","%20");
+    }
+
+    @GetMapping("/addCurrentJob")
+    public String getAddCurrentJob(ModelMap map, Principal principal)
+    {
+        Person p = personService.findByEmail(principal.getName());
+        if(p.getCurrentJob()!=null)
+        {
+            map.addAttribute("employer",p.getCurrentJob().getEmployerId());
+            map.addAttribute("name", p.getCurrentJob().getName());
+            map.addAttribute("experienceLevel", p.getCurrentJob().getExperienceLevel().name());
+            map.addAttribute("location", p.getCurrentJob().getLocation());
+            map.addAttribute("description", p.getCurrentJob().getDescription());
+            Date startDate = p.getCurrentJob().getDatePosted();
+            String formattedDate ="";
+            if(startDate!=null)
+            {
+                formattedDate = new SimpleDateFormat("MM/dd/yyyy").format(startDate);
+            }
+            map.addAttribute("startDate", formattedDate);
+        }
         return "addCurrentJob";
     }
 
     @PostMapping("addCurrentJ")
-    public String addCurrentJob(Job j, BindingResult bindingResult, String birthdayy, String employer, Principal principal)
+    public String addCurrentJob(String name, String experienceLevel,
+                                String birthdayy, String employer, Principal principal, String location,
+                                String description)
     {
-        if(bindingResult.hasErrors())
+        Person p = personService.findByEmail(principal.getName());
+        Job j = p.getCurrentJob();
+        if(j==null)
         {
-            return "/addCurrentJ";
+            j = new Job();
         }
+        //if(bindingResult.hasErrors())
+//        {
+//            return "/addCurrentJ";
+//        }
         try {
-            j.setDatePosted(new SimpleDateFormat("yyyy-dd-MM").parse(birthdayy));
+            if(!birthdayy.equals(""))
+            {
+                j.setDatePosted(new SimpleDateFormat("yyyy-dd-MM").parse(birthdayy));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        j.setEmployerId(employer);
-        Person p = personService.findByEmail(principal.getName());
+        if(!employer.equals(""))
+        {
+            j.setEmployerId(employer);
+        }
+        if(!name.equals(""))
+        {
+            j.setName(name);
+        }
+        j.setExperienceLevel(ExperienceLevel.valueOf(experienceLevel));
+
+        if(!location.equals(""))
+        {
+            j.setLocation(location);
+        }
+        if(!description.equals(""))
+        {
+            j.setDescription(description);
+        }
         personService.saveCurrentJob(p,j);
         return "redirect:/profilePage";
     }
@@ -111,46 +189,135 @@ public class MainController {
     }
 
     @GetMapping("/profileCompany")
-    public String getProfilePageCompany(ModelMap map, Principal principal)
+    public String getProfilePageCompany(ModelMap map, Principal principal, String job)
     {
-        String email = principal.getName();
-        Company currentUser = companyService.findByEmail(email);
-        map.addAttribute("email", currentUser.getEmail());
-        map.addAttribute("website", currentUser.getWebsite());
-        map.addAttribute("phone", currentUser.getPhone());
-        map.addAttribute("image", Base64.getEncoder().encodeToString(currentUser.getImage().getData()));
-        map.addAttribute("name", currentUser.getName());
+        Company currentUser =null;
+        if(job==null)
+        {
+            String email = principal.getName();
+            currentUser = companyService.findByEmail(email);
+        }
+        else
+        {
+            Job j = jobService.findById(job);
+            currentUser = companyService.findById(j.getEmployerId());
+            map.addAttribute("company",j.getEmployerId());
+        }
+        if(currentUser.getEmail()!=null)
+        {
+            map.addAttribute("email", currentUser.getEmail());
+        }
+        if(currentUser.getWebsite()!=null)
+        {
+            map.addAttribute("website", currentUser.getWebsite());
+        }
+        if(currentUser.getPhone()!=null)
+        {
+            map.addAttribute("phone", currentUser.getPhone());
+        }
+        if(currentUser.getImage()!=null)
+        {
+            map.addAttribute("image", Base64.getEncoder().encodeToString(currentUser.getImage().getData()));
+        }
+        if(currentUser.getName()!=null)
+        {
+            map.addAttribute("name", currentUser.getName());
+        }
         List<Job> availableJobs = jobService.findByCompany(currentUser.getId());
-        map.addAttribute("jobs", availableJobs.stream().limit(2).collect(Collectors.toList()));
+        if(availableJobs!=null)
+        {
+            map.addAttribute("jobs", availableJobs.stream().limit(2).collect(Collectors.toList()));
+        }
 
         Person manager = currentUser.getManager();
         if(manager!=null)
         {
-            map.addAttribute("nameM", manager.getName());
-            map.addAttribute("emailM", manager.getEmail());
-            map.addAttribute("phoneM",manager.getPhone());
-            map.addAttribute("addressM",manager.getAddress());
-            map.addAttribute("descriptionM", manager.getDescription());
-            map.addAttribute("imageM", Base64.getEncoder().encodeToString(manager.getImage().getData()));
+            if(manager.getName()!=null)
+            {
+                map.addAttribute("nameM", manager.getName());
+            }
+            if(manager.getEmail()!=null)
+            {
+                map.addAttribute("emailM", manager.getEmail());
+            }
+            if(manager.getPhone()!=null)
+            {
+                map.addAttribute("phoneM",manager.getPhone());
+            }
+            if(manager.getAddress()!=null)
+            {
+                map.addAttribute("addressM",manager.getAddress());
+            }
+            if(manager.getDescription()!=null)
+            {
+                map.addAttribute("descriptionM", manager.getDescription());
+            }
+            if(manager.getImage()!=null)
+            {
+                map.addAttribute("imageM", Base64.getEncoder().encodeToString(manager.getImage().getData()));
+            }
         }
         return "profileCompany";
     }
 
+    @PostMapping("/viewProfilePageCompany")
+    public String viewProfilePageCompany(String job)
+    {
+        return "redirect:/profileCompany?job="+job.replace(" ","%20");
+    }
+
     @GetMapping("/viewPostedJobs")
-    public String getViewPostedJobs(ModelMap map, Principal principal)
+    public String getViewPostedJobs(ModelMap map, Principal principal, String company)
     {
         List<Job> savedJobs = new ArrayList<>();
-        jobService.findAll().forEach(x -> savedJobs.add(x));
-        Company c = companyService.findByEmail(principal.getName());
-        savedJobs.stream().filter(x -> x.getEmployerId().equals(c.getId()));
+        //jobService.findAll().forEach((Job x) -> savedJobs.add(x));
+        for(Job j : jobService.findAll())
+        {
+            savedJobs.add(j);
+        }
+        Company c;
+        if(company!=null)
+        {
+            c = companyService.findById(company);
+            Person ps = personService.findByEmail(principal.getName());
+            List<Job> delJobs = new ArrayList<Job>();
+            for(Job j : savedJobs){
+                if(ps.getJobs()!=null)
+                {
+                    for(Job jb : ps.getJobs()){
+                        if(jb.getId().equals(j.getId()))
+                            delJobs.add(j);
+                    }
+                }
+            }
+            savedJobs.removeAll(delJobs);
+        }
+        else
+        {
+            c = companyService.findByEmail(principal.getName());
+        }
+        savedJobs = savedJobs.stream().filter(x -> x.getEmployerId().equals(c.getId())).collect(Collectors.toList());
 
-        map.addAttribute("jobs", savedJobs);
-        map.addAttribute("name", c.getName());
+        if(savedJobs!=null)
+        {
+            map.addAttribute("jobs", savedJobs);
+        }
+        if(c.getName()!=null)
+        {
+            map.addAttribute("name", c.getName());
+        }
 
         List<String> images = new ArrayList<>();
         for(Job j : savedJobs)
         {
-            images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            if(c.getImage()!=null)
+            {
+                images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            }
+            else
+            {
+                images.add("");
+            }
         }
         map.addAttribute("images", images);
         return "viewPostedJobs";
@@ -176,10 +343,94 @@ public class MainController {
         List<String> images = new ArrayList<>();
         for(Person p : peopleInterested)
         {
-            images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+            if(p.getImage()!=null)
+            {
+                images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+            }
+            else
+            {
+                images.add("");
+            }
         }
         map.addAttribute("images", images);
+        map.addAttribute("jobId",job);
+        map.addAttribute("job", jobService.findById(job));
+        map.addAttribute("hiredPerson",jobService.findById(job).getHiredPerson());
         return "interestedPeople";
+    }
+
+    @PostMapping("/viewCV")
+    public String viewCV(String id)
+    {
+        return "redirect:/viewCVPage?id="+id;
+    }
+
+    @GetMapping("/viewCVPage")
+    public String getViewCV(String id, ModelMap map)
+    {
+        //img
+        Person p = personService.findById(id);
+        String img = new String("");
+        //CV
+        if(p.getCV()!=null)
+        {
+            img = Base64.getEncoder().encodeToString(p.getCV().getData());
+        }
+
+        map.addAttribute("image", img);
+        map.addAttribute("id",id);
+        return "viewCVPage";
+    }
+
+    @PostMapping("/addCV")
+    public String addCV(@RequestParam("image") MultipartFile image, String id)
+    {
+
+        try {
+            personService.updateCV(id, new Binary(BsonBinarySubType.BINARY, image.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/viewCVPage?id="+id;
+    }
+
+    @PostMapping(path="/hirePerson")
+    public String hirePerson(String job, String person){
+        List<Person> allPersons = new ArrayList<Person>();
+        personService.findAll().forEach(x->allPersons.add(x));
+
+        Job jb = jobService.findById(job);
+        //jb.notifyObservers();
+
+        for(Person p : allPersons)
+        {
+            if(!p.getId().equals(person))
+            {
+                Job foundJob = null;
+                if(p.getJobs()!=null)
+                    for(Job j : p.getJobs())
+                    {
+                        if(j.getId().equals(job))
+                            foundJob = j;
+                    }
+                if(foundJob!=null)
+                    p.getJobs().remove(foundJob);
+                //{}
+                personService.updateJobs(p,p.getJobs());
+            }
+            else{
+                    jb.setHiredPerson(person);
+                    Job svdJob = null;
+                    for(Job i : p.getJobs())
+                        if(i.getId().equals(jb.getId()))
+                            i.setHiredPerson(person);
+                    personService.updateJobs(p,p.getJobs());
+                    jobService.save(jb);
+            }
+        }
+
+        return "redirect:/interestedPeople?job="+job;
+
     }
 
     @PostMapping(path="/viewInterestedPeople")
@@ -189,14 +440,23 @@ public class MainController {
     }
 
     @GetMapping("/browseJobs")
-    public String getBrowseJobsPage(ModelMap map, Principal principal)
+    public String getBrowseJobsPage(ModelMap map, Principal principal, HttpServletRequest request)
     {
         List<Job> allJobs = new ArrayList<>();
         Person p = personService.findByEmail(principal.getName());
-        jobService.findAll().forEach(x -> {if(!p.interestedIn(x))
-            allJobs.add(x);
+        if(request.isUserInRole("PERSON"))
+        {
+            jobService.findAll().forEach(x -> {if(!p.interestedIn(x) && x.getHiredPerson() == null)
+                        allJobs.add(x);
+                    }
+            );
         }
-        );
+        else
+        {
+            //administrator
+            jobService.findAll().forEach(x -> allJobs.add(x));
+
+        }
         map.addAttribute("jobs", allJobs);
 
         List<Company> companies = new ArrayList<>();
@@ -205,18 +465,196 @@ public class MainController {
         {
             Company c = companyService.findById(j.getEmployerId());
             companies.add(c);
-            images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            if(c.getImage()!=null)
+            {
+                images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            }
+            else {
+                images.add("");
+            }
         }
         map.addAttribute("companies", companies);
         map.addAttribute("images", images);
         return "browseJobs";
     }
 
+    @PostMapping("/browseSearchResults")
+    public String getSearchResults(String search, ModelMap map, Principal principal, String searchType,
+                                   HttpServletRequest request)
+    {
+        User u = null;
+        if(request.isUserInRole("PERSON") || request.isUserInRole("ADMIN"))
+        {
+            u = personService.findByEmail(principal.getName());
+        }
+        else if(request.isUserInRole("COMPANY"))
+        {
+            u = companyService.findByEmail(principal.getName());
+        }
+        List<Job> foundJobs = jobService.findJobs(u, search, searchType);
+
+        if(foundJobs ==null)
+        {
+            if(searchType.equals("browse"))
+            {
+                return "redirect:/browseJobs";
+            }
+            else if(searchType.equals("saved"))
+            {
+                return "redirect:/savedJobs";
+            }
+            else if(searchType.equals("posted"))
+            {
+                return "redirect:/viewPostedJobs";
+            }
+            else if(searchType.equals("people"))
+            {
+                return "redirect:/interestedPeople";
+            }
+            else if(searchType.equals("users"))
+            {
+                return "redirect:/allusers";
+            }
+        }
+        map.addAttribute("jobs", foundJobs);
+
+        List<Company> companies = new ArrayList<>();
+        List<String> images = new ArrayList<>();
+        for(Job j : foundJobs)
+        {
+            Company c = companyService.findById(j.getEmployerId());
+            companies.add(c);
+            if(c.getImage()!=null)
+            {
+                images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            }
+            else
+            {
+                images.add("");
+            }
+        }
+        map.addAttribute("companies", companies);
+        map.addAttribute("images", images);
+
+        if(searchType.equals("browse"))
+        {
+            return "browseJobs";
+        }
+        else if(searchType.equals("saved"))
+        {
+            return "savedJobs";
+        }
+        else
+        {
+            return "viewPostedJobs";
+        }
+    }
+
+    @PostMapping("/browseSearchResults2")
+    public String getSearchResults2(String search, ModelMap map, Principal principal, String searchType,
+                                    HttpServletRequest request, String jobId)
+    {
+        List<Person> personList = null;
+        List<Company> companies = null;
+
+        if(request.isUserInRole("COMPANY"))
+        {
+            personList = personService.findPeople(search, searchType, jobId);
+
+            if(personList ==null)
+            {
+                if(searchType.equals("people"))
+                {
+                    return "redirect:/interestedPeople?job="+jobId;
+                }
+            }
+        }
+        else if(request.isUserInRole("ADMIN"))
+        {
+            personList = personService.findPeople(search, searchType, null);
+            companies = companyService.findCompanies(search,searchType);
+
+            if(personList ==null && companies==null)
+            {
+                if(searchType.equals("users"))
+                {
+                    return "redirect:/allusers";
+                }
+            }
+        }
+
+        if(searchType.equals("people"))
+        {
+            map.addAttribute("people", personList);
+
+            List<String> images = new ArrayList<>();
+            for(Person p : personList)
+            {
+                if(p.getImage()!=null)
+                {
+                    images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+                }
+                else
+                {
+                    images.add("");
+                }
+            }
+            map.addAttribute("images", images);
+            map.addAttribute("jobId",jobId);
+            map.addAttribute("job", jobService.findById(jobId));
+            map.addAttribute("hiredPerson",jobService.findById(jobId).getHiredPerson());
+        }
+        else if(searchType.equals("users"))
+        {
+            map.addAttribute("persons", personList);
+            map.addAttribute("companies", companies);
+
+            List<String> images = new ArrayList<>();
+            for(Person p : personList)
+            {
+                if(p.getImage()!=null)
+                {
+                    images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+                }
+                else
+                {
+                    images.add("");
+                }
+            }
+            map.addAttribute("images", images);
+
+            List<String> images2 = new ArrayList<>();
+            for(Company c : companies)
+            {
+                if(c.getImage()!=null)
+                {
+                    images2.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+                }
+                else
+                {
+                    images2.add("");
+                }
+            }
+            map.addAttribute("images2", images2);
+        }
+
+        if(searchType.equals("people"))
+        {
+            return "interestedPeople";
+        }
+        else
+        {
+            return "allUsers";
+        }
+    }
+
     @GetMapping("/savedJobs")
     public String getSavedJobsPage(ModelMap map, Principal principal)
     {
-        List<Job> savedJobs = personService.findByEmail(principal.getName()).getJobs();
+        Person p = personService.findByEmail(principal.getName());
+        List<Job> savedJobs = p.getJobs();
         map.addAttribute("jobs", savedJobs);
+        map.addAttribute("person", p.getId());
 
         List<Company> companies = new ArrayList<>();
         List<String> images = new ArrayList<>();
@@ -226,7 +664,10 @@ public class MainController {
             {
                 Company c = companyService.findById(j.getEmployerId());
                 companies.add(c);
-                images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+                if(c.getImage()!=null)
+                {
+                    images.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+                }
             }
             map.addAttribute("companies", companies);
             map.addAttribute("images", images);
@@ -299,7 +740,11 @@ public class MainController {
     public String getAddPersonSkillPage(ModelMap map, Principal principal)
     {
         String email = principal.getName();
-        map.addAttribute("skills",personService.findByEmail(email).getSkills());
+        Person p = personService.findByEmail(email);
+        if(p.getSkills()!=null)
+        {
+            map.addAttribute("skills",p.getSkills());
+        }
         List<String> allSkills = new ArrayList<String>();
         skillService.findAll().forEach(x -> allSkills.add(x.getName()));
         map.addAttribute("allSkills",allSkills);
@@ -354,16 +799,31 @@ public class MainController {
         if(request.isUserInRole("PERSON") || request.isUserInRole("ADMIN"))
         {
             user = personService.findByEmail(principal.getName());
-            map.addAttribute("address", ((Person) user).getAddress());
+            if(((Person) user).getAddress()!=null)
+            {
+                map.addAttribute("address", ((Person) user).getAddress());
+            }
         }
         else if(request.isUserInRole("COMPANY"))
         {
             user = companyService.findByEmail(principal.getName());
-            map.addAttribute("website", ((Company) user).getWebsite());
+            if(((Company) user).getWebsite()!=null)
+            {
+                map.addAttribute("website", ((Company) user).getWebsite());
+            }
         }
-        map.addAttribute("name", user.getName());
-        map.addAttribute("description", user.getDescription());
-        map.addAttribute("phone", user.getPhone());
+        if(user.getName()!=null)
+        {
+            map.addAttribute("name", user.getName());
+        }
+        if(user.getDescription()!=null)
+        {
+            map.addAttribute("description", user.getDescription());
+        }
+        if(user.getPhone()!=null)
+        {
+            map.addAttribute("phone", user.getPhone());
+        }
         return "editAccount";
     }
 
@@ -437,11 +897,26 @@ public class MainController {
         Person manager = c.getManager();
         if(manager!=null)
         {
-            map.addAttribute("name", manager.getName());
-            map.addAttribute("email", manager.getEmail());
-            map.addAttribute("description", manager.getDescription());
-            map.addAttribute("phone", manager.getPhone());
-            map.addAttribute("address", manager.getAddress());
+            if(manager.getName()!=null)
+            {
+                map.addAttribute("name", manager.getName());
+            }
+            if(manager.getEmail()!=null)
+            {
+                map.addAttribute("email", manager.getEmail());
+            }
+            if(manager.getDescription()!=null)
+            {
+                map.addAttribute("description", manager.getDescription());
+            }
+            if(manager.getPhone()!=null)
+            {
+                map.addAttribute("phone", manager.getPhone());
+            }
+            if(manager.getAddress()!=null)
+            {
+                map.addAttribute("address", manager.getAddress());
+            }
         }
         return "editManager";
     }
@@ -485,14 +960,20 @@ public class MainController {
         List<String> images = new ArrayList<>();
         for(Person p : persons)
         {
-            images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+            if(p.getImage()!=null)
+            {
+                images.add(Base64.getEncoder().encodeToString(p.getImage().getData()));
+            }
         }
         map.addAttribute("images", images);
 
         List<String> images2 = new ArrayList<>();
         for(Company c : companies)
         {
-            images2.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            if(c.getImage()!=null)
+            {
+                images2.add(Base64.getEncoder().encodeToString(c.getImage().getData()));
+            }
         }
         map.addAttribute("images2", images2);
         return "allUsers";
@@ -558,11 +1039,26 @@ public class MainController {
     {
         map.addAttribute("job", job);
         Job j = jobService.findById(job);
-        map.addAttribute("name", j.getName());
-        map.addAttribute("experienceLevel", j.getExperienceLevel().name());
-        map.addAttribute("description", j.getDescription());
-        map.addAttribute("location", j.getLocation());
-        map.addAttribute("industry", j.getIndustry());
+        if(j.getName()!=null)
+        {
+            map.addAttribute("name", j.getName());
+        }
+        if(j.getExperienceLevel()!=null)
+        {
+            map.addAttribute("experienceLevel", j.getExperienceLevel().name());
+        }
+        if(j.getDescription()!=null)
+        {
+            map.addAttribute("description", j.getDescription());
+        }
+        if(j.getLocation()!=null)
+        {
+            map.addAttribute("location", j.getLocation());
+        }
+        if(j.getIndustry()!=null)
+        {
+            map.addAttribute("industry", j.getIndustry());
+        }
         return "editJob";
     }
 
@@ -571,12 +1067,12 @@ public class MainController {
                                  String location, String industry)
     {
         jobService.editJob(job, name, experienceLevel, location, industry, description);
-        return "redirect:/viewPostedJobs";
+        return "redirect:/addJobSkill?job="+job.replace(" ", "%20");
     }
 
     @GetMapping(path="/allskills")
     public String getAllSkills(ModelMap map) {
-        // This returns a JSON or XML with the users
+        // This returns a JSON or XML with the skills
         map.addAttribute("skills", skillService.findAll());
         return "redirect:/addskill";
     }

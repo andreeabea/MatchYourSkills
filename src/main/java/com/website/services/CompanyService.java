@@ -9,6 +9,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class CompanyService {
 
@@ -106,5 +110,22 @@ public class CompanyService {
         }
         c.setManager(p);
         return companyRepo.save(c);
+    }
+
+    public List<Company> findCompanies(String search, String searchType)
+    {
+        SearchFilter searchFilter = SearchFilter.getSearchFilter();
+        String filteredResult = searchFilter.filterSearch(search);
+
+        if(filteredResult==null || filteredResult.equals(""))
+        {
+            return null;
+        }
+
+        List<Company> foundCompanies = new ArrayList<>();
+        foundCompanies.addAll(companyRepo.findByNameLike(filteredResult));
+
+
+        return foundCompanies.stream().filter(SearchFilter.distinctById(Company::getId)).collect(Collectors.toList());
     }
 }

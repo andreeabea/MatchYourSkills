@@ -3,6 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:include page="navigationBars.jsp" />
 <sec:authorize access="hasRole('COMPANY')" var="isCompany" />
+<sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -143,8 +144,9 @@
 
         .ul1 {
           list-style-type: none;
-          width: 500px;
+          width: 600px;
           background-color: #f2f2f2;
+          margin: 5px;
         }
 
         .li1 img {
@@ -204,7 +206,7 @@ ul {
       }
 
       li {
-        float: left;
+        /* float: left; */
         border-right:1px solid #bbb;
       }
 
@@ -287,9 +289,8 @@ ul {
               </div>
             </div>
             <div class="w3-container" >
-              <p class ="w3-large"><i class="fa fa-home fa-fw w3-margin-right"></i>Cluj-Napoca, Romania</p><br>
+              <p class ="w3-large"><i class="fa fa-home fa-fw w3-margin-right"></i>Website: ${website}</p><br>
               <p class ="w3-large"><i class="fa fa-envelope fa-fw w3-margin-right"></i>${email}</p>
-              <p class ="w3-large"><i class="fa fa-fw w3-margin-right"></i>Website: ${website}</p><br>
               <p class ="w3-large"><i class="fa fa-phone fa-fw w3-margin-right"></i>${phone}</p>
               <hr>
               <br>
@@ -308,19 +309,27 @@ ul {
                <div class = "div1">
                     <ul class="ul1">
                     <li class="li1">
-                     <img style="width:120px;height:140px;" src="data:image/jpg;base64,${imageM}"/>
-                <h5 class="w3-opacity"><b>${nameM}</b></h5>
-                <h6 class="w3-text-green"><b></i>${emailM}</b></h6>
-                <h6 class="w3-text-green"><b></i>${phoneM}</b></h6>
-                <h6 class="w3-opacity"><b></i>${addressM}</b></h6>
+                    <c:choose>
+                    <c:when test="${not empty imageM}">
+                     <img style="width:140px;height:140px;" src="data:image/jpg;base64,${imageM}"/>
+                    </c:when>
+                    </c:choose>
+                <h5 class="w3-opacity"><b>Name: ${nameM}</b></h5>
+                <h6 class="w3-text-green"><b></i>Email: ${emailM}</b></h6>
+                <h6 class="w3-text-green"><b></i>Phone: ${phoneM}</b></h6>
+                <h6 class="w3-opacity"><b></i>Address: ${addressM}</b></h6>
                 <h6>${descriptionM}</h6>
                 </li>
 
                    </ul>
                              </div>
             <br>
+            <c:choose>
+            <c:when test="${isCompany}">
             <center><form action="/editManager">
                 <button class="button button1">Edit Manager</button></form></center>
+            </c:when>
+            </c:choose>
 
           </div>
 
@@ -332,20 +341,34 @@ ul {
                     <c:forEach var="listValue" items="${jobs}" varStatus="loop">
                     <li class="li1">
 
-                              <h1>${listValue.name}</h1>
-                              <h3>Date Posted: ${listValue.datePosted}</h3>
-                              <h3>Required skills: ${listValue.skills}</h3>
-                              <h3>Experience: ${listValue.experienceLevel}</h3>
+                              <h5 class="w3-opacity"><b>${listValue.name}</b></h5>
+                              <h5 class="w3-opacity">Date Posted: ${listValue.datePosted}</b></h5>
+                              <h5 class="w3-opacity">Location: ${listValue.location}</b></h5>
+                              <h5 class="w3-text-green">Industry: ${listValue.industry}</b></h5>
+                              <h6 class="w3-text-green"><b>Required skills: ${listValue.skills}</b></h6>
+                              <h6 class="w3-text-green"><b>Experience: ${listValue.experienceLevel}</b></h6>
+                              <h6>Description: ${listValue.description}</h6>
+                              <c:choose>
+                              <c:when test="${isCompany}">
                               <form action="/viewInterestedPeople" method="POST">
                                 <input type="hidden" name="job" value= "${listValue.id}">
                                 <button type="submit" class="registerbtn">View interested people</button></form>
+                              </c:when>
+                              </c:choose>
                        </li>
                     </c:forEach>
 
                   </ul>
              </div>
+
                 <center><form action="/viewPostedJobs">
-                                    <button class="button button1">View All</button></form></center>
+                <c:choose>
+                            <c:when test="${isPerson}">
+                            <input type="hidden" name="company" value= "${company}">
+                            </c:when>
+                </c:choose>
+                <button class="button button1">View All</button></form></center>
+
             </div>
           </div>
 

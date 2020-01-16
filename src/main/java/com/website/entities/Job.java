@@ -28,6 +28,16 @@ public class Job {
 
     private String description;
 
+    public String getHiredPerson() {
+        return hiredPerson;
+    }
+
+    public void setHiredPerson(String hiredPerson) {
+        this.hiredPerson = hiredPerson;
+    }
+
+    private String hiredPerson;
+
     public String getIndustry() {
         return industry;
     }

@@ -173,6 +173,7 @@
                  <li class="libar"><a class="active" href="/home">Home</a></li>
                  <li class="libar"><a href="/profilePage">Profile</a></li>
                  <li class="libar"><a href="/browseJobs">Browse Jobs</a></li>
+                 <li class="libar"><a href="/savedJobs">Saved Jobs</a></li>
                       <li class="dropdown">
                                           <a href="javascript:void(0)" class="dropbtn">Account Settings</a>
                                                                          <div class="dropdown-content">

@@ -5,6 +5,11 @@
 <sec:authorize access="hasRole('PERSON')" var="isPerson" />
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin" />
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -140,8 +145,9 @@
 
 .ul1 {
   list-style-type: none;
-  width: 500px;
+  width: 700px;
   background-color: #f2f2f2;
+  margin: 5px;
 }
 
 .li1 img {
@@ -210,7 +216,7 @@
       }
 
       li {
-        float: left;
+        /* float: left; */
         border-right:1px solid #bbb;
       }
 
@@ -279,8 +285,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <hr>
     <!-- The form -->
-    <form class="example" action="/action_page.php">
-      <input type="text" placeholder="Search.." name="search">
+    <form class="example" action="/browseSearchResults" method="POST">
+      <input type="text" placeholder="Search..." name="search">
+      <input type="hidden" name="searchType" value= "browse">
       <button type="submit"><i class="fa fa-search"></i></button>
     </form>
 
@@ -289,18 +296,23 @@
 
         <c:forEach var="listValue" items="${jobs}" varStatus="loop">
         <li class="li1">
-                  <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
-                  <h1>${listValue.name}</h1>
-                  <h3>Company: ${companies[loop.index].name}</h3>
-                  <h3>Date Posted: ${listValue.datePosted}</h3>
-                  <h3>Required skills: ${listValue.skills}</h3>
-                  <h3>Experience: ${listValue.experienceLevel}</h3>
+                  <img style="width:130px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
+                  <h5 class="w3-opacity"><b>${listValue.name}</b></h5>
+                  <h5 class="w3-opacity"><b>Company: ${companies[loop.index].name}</b></h5>
+                                                <h5 class="w3-opacity">Date Posted: ${listValue.datePosted}</b></h5>
+                                                <h5 class="w3-opacity">Location: ${listValue.location}</b></h5>
+                                                <h5 class="w3-text-green">Industry: ${listValue.industry}</b></h5>
+                                                <h6 class="w3-text-green"><b>Required skills: ${listValue.skills}</b></h6>
+                                                <h6 class="w3-text-green"><b>Experience: ${listValue.experienceLevel}</b></h6>
+                                                <h6>Description: ${listValue.description}</h6>
                   <c:choose>
                     <c:when test="${isPerson}">
                   <form action="/saveJob" method="POST">
                   <input type="hidden" name="id" value= "${listValue.id}">
                   <button type="submit" class="registerbtn">Save job</button></form>
-                  <button type="submit" class="registerbtn">View Company</button>
+                  <form action="/viewProfilePageCompany" method="POST">
+                       <input type="hidden" name="job" value= "${listValue.id}">
+                  <button type="submit" class="registerbtn">View Company</button></form>
                     </c:when>
                     <c:when test="${isAdmin}">
                         <form action="/deleteJob" method="POST">

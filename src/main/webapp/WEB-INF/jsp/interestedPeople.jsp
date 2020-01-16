@@ -4,6 +4,11 @@
 <jsp:include page="navigationBars.jsp" />
 <sec:authorize access="hasRole('COMPANY')" var="isCompany" />
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <head>
 <style>
     html, body, h1, h2, h3, h4, h5 {
@@ -138,8 +143,9 @@
 
 .ul1 {
   list-style-type: none;
-  width: 500px;
+  width: 700px;
   background-color: #f2f2f2;
+  margin: 5px;
 }
 
 .li1 img {
@@ -208,7 +214,7 @@
          }
 
          li {
-           float: left;
+           /*float: left;*/
            border-right:1px solid #bbb;
          }
 
@@ -269,6 +275,15 @@
          .dropdown:hover .dropdown-content {
            display: block;
          }
+
+                  .button2{
+                                                box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+                                             }
+
+                                    /*button colour light blue*/
+                                    .button2 {
+                                       background-color: #5DB7DE;
+                                    }
 </style>
 </head>
 <body>
@@ -277,8 +292,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <hr>
     <!-- The form -->
-    <form class="example" action="/action_page.php">
+    <form class="example" action="/browseSearchResults2" method="POST">
       <input type="text" placeholder="Search.." name="search">
+      <input type="hidden" name="searchType" value= "people">
+      <input type="hidden" name="jobId" value= "${jobId}">
       <button type="submit"><i class="fa fa-search"></i></button>
     </form>
 
@@ -287,17 +304,31 @@
 
         <c:forEach var="listValue" items="${people}" varStatus="loop">
         <li class="li1">
-                  <img style="width:120px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
-                  <h1>${listValue.name}</h1>
-                  <h3>Current job: ${listValue.currentJob.name} - ${listValue.currentJob.experienceLevel}</h3>
-                  <h3>Email: ${listValue.email}</h3>
-                  <h3>Skills: ${listValue.skills}</h3>
-                  <h3>Description: ${listValue.description}</h3>
+                  <img style="width:130px;height:140px;" src="data:image/jpg;base64,${images[loop.index]}"/>
+                  <h5 class="w3-opacity"><b>${listValue.name}</b></h5>
+                                        <h5 class="w3-opacity"><b>Current job: ${listValue.currentJob.name} - ${listValue.currentJob.experienceLevel}</b></h5>
+                                        <h6 class="w3-text-green"><b>Skills: ${listValue.skills}</b></h6>
+                                        <h6 class="w3-text-green"><b>Email: ${listValue.email}</b></h6>
+                                        <h6>Address: ${listValue.address}</h6>
+                                        <h6>Description: ${listValue.description}</h6>
 
+                    <form action="/viewProfilePage" method="POST">
                   <button type="submit" class="registerbtn">View Profile</button>
-                   <form action="/viewInterestedPeople" method="POST">
-                     <input type="hidden" name="job" value= "${listValue.id}">
+                     <input type="hidden" name="person" value= "${listValue.id}"> </form>
+                   <c:choose>
+                   <c:when test="${empty hiredPerson}">
+                   <form action="/hirePerson" method="POST">
+                     <input type="hidden" name="person" value= "${listValue.id}">
+                     <input type="hidden" name="job" value= "${jobId}">
                    <button type="submit" class="registerbtn">Hire</button></form>
+                   </c:when>
+                   </c:choose>
+                      <c:choose>
+                      <c:when test="${job.hiredPerson eq listValue.id}">
+                      <button class="button button2">Hired</button></form>
+                      </c:when>
+                      </c:choose>
+
         </li>
         </c:forEach>
       </ul>
