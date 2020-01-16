@@ -158,7 +158,8 @@
 				placeholder="Enter Name" name="name" required></br>
 
 			<label for="email"><b>Email</b></label> <input type="email"
-				placeholder="Enter Email" name="email" required></br>
+				placeholder="Enter Email" name="email" oninvalid="alert('Invalid email format');"
+				required></br>
 
 			<label for="password"><b>Password</b></label> <input type="password"
             				placeholder="Enter Password" name="password" required></br>
@@ -174,12 +175,15 @@
                }
             </script>
             <label for="phone"><b>Phone number</b></label> <input
-                        type="phone" pattern="+[0-9]{11}"
+                        type="text" pattern="^\+(?:[0-9] ?){6,14}[0-9]$"
+                        oninvalid="alert('Invalid phone number format');"
                         placeholder="Enter Telephone Number (e.g. +40123456789)"
                         name="phone" required>
 
             <label for="website"><b>Website</b></label> <input type="text"
-            	placeholder="Enter Website Address" name="website" required></br>
+            	placeholder="Enter Website Address" name="website"
+            	pattern="[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?"
+            	oninvalid="alert('Invalid website format');" required></br>
 
 			<button type="submit" class="registerbtn">Submit</button>
 

@@ -160,7 +160,8 @@
 				placeholder="${name}" name="name" ></br>
 
 			<label for="email"><b>Email</b></label> <input type="email"
-            				placeholder="${email}" name="email"></br>
+            				placeholder="${email}"
+            				oninvalid="alert('Invalid email format');" name="email"></br>
 
 			<label for="description"><b>Description</b></label> <input type="text"
                 placeholder="${description}" name="description"></br>
@@ -173,7 +174,8 @@
                }
             </script>
             <label for="phone"><b>Phone number</b></label> <input
-                        type="phone" pattern="+[0-9]{11}"
+                        type="phone" pattern="^\+(?:[0-9] ?){6,14}[0-9]$"
+                        oninvalid="alert('Invalid phone number format');"
                         placeholder="${phone}"
                         name="phone">
 

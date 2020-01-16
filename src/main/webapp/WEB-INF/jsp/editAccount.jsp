@@ -172,16 +172,18 @@
                }
             </script>
             <label for="phone"><b>Phone number</b></label> <input
-                        type="phone" pattern="+[0-9]{11}"
+                        type="phone" pattern="^\+(?:[0-9] ?){6,14}[0-9]$"
+                        oninvalid="alert('Invalid phone number format');"
                         placeholder="${phone}"
                         name="phone">
 
             <c:choose>
                 <c:when test="${isCompany}">
-                <label for="location"><b>Location</b></label>
-                          <input type="text" placeholder="${location}" name="location">
+
                 		<label for="address"><b>Website</b></label>
-                              <input type="text" placeholder="${website}" name="address">
+                              <input type="text" placeholder="${website}"
+                              pattern="[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?"
+                              oninvalid="alert('Invalid website format');" name="address">
 
 
                 	</c:when>
